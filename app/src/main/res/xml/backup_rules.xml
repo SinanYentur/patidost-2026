@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- RVWL: 2026 Production Standard for Cloud Privacy -->
+    <!-- Exclude sensitive Firebase and Room DB files from Drive backup -->
+    <exclude domain="sharedpref" path="com.google.firebase.auth.api.Store.*" />
+    <exclude domain="database" path="patidost_database" />
+    
+    <!-- Include only non-sensitive app settings if necessary -->
+</full-backup-content>
