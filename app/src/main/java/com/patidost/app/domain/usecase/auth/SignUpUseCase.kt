@@ -1,17 +1,17 @@
 package com.patidost.app.domain.usecase.auth
 
 import com.patidost.app.domain.model.User
-import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * UseCase to register a new user.
- * RVWL: Synchronized with com.patidost.app package identity.
+ * SignUp UseCase - V10000.7700 Atomic Action.
+ * RVWL: Formal execution of user registration.
  */
 class SignUpUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(email: String, pass: String, name: String): Result<User> {
-        return userRepository.signUp(email, pass, name)
+        return authRepository.signUp(email, pass, name)
     }
 }

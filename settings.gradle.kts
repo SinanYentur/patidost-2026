@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google {
             content {
@@ -21,4 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "patidost"
 include(":app")
-include(":baselineprofile") // NEW: Performance Optimization Module
+include(":baselineprofile")

@@ -1,4 +1,8 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// ============================================
+// 2026 PLAY STORE COMPLIANT BUILD CONFIG
+// Target SDK: 36 | AGP: 8.13.2 | Kotlin: 2.3.0
+// ============================================
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
@@ -7,6 +11,6 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.kotlin.serialization) apply false
-    alias(libs.plugins.androidx.baselineprofile) apply false // NEW: Global Performance Plugin
-    alias(libs.plugins.android.test) apply false // NEW: Required for Test Modules
+    alias(libs.plugins.firebase.crashlytics) apply false
+    alias(libs.plugins.firebase.perf) apply false
 }

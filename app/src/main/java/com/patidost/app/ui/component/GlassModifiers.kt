@@ -1,24 +1,21 @@
 package com.patidost.app.ui.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.RoundedCornerShape
+import android.graphics.BlurMaskFilter
+import android.graphics.RenderEffect
+import android.graphics.RuntimeShader
+import android.os.Build
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.patidost.app.ui.theme.*
+import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.graphicsLayer
 
-/**
- * Premium Glass Effect Modifier - Mimar V44 Standard.
- * RVWL: Synchronized with Vision Assets 1 and 5.
- */
-fun Modifier.patidostGlassCard() = this
-    .clip(RoundedCornerShape(20.dp))
-    .background(Brush.verticalGradient(listOf(GlassWhite, Color(0x05FFFFFF))))
-    .border(
-        width = 0.5.dp, 
-        brush = Brush.verticalGradient(listOf(GlassStroke, Color.Transparent)), 
-        shape = RoundedCornerShape(20.dp)
-    )
+fun Modifier.glassEffect(
+    blurRadius: Float = 20f
+): Modifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    this.graphicsLayer {
+        renderEffect = RenderEffect.createBlurEffect(
+            blurRadius, blurRadius, android.graphics.Shader.TileMode.CLAMP
+        ).asComposeRenderEffect()
+    }
+} else {
+    this // API 31 altı için fallback (V46.10 standardı)
+}

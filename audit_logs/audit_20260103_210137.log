@@ -1,0 +1,5 @@
+﻿[21:01:38] Project path OK
+[21:01:38] Running build (timeout 180s)...
+[21:02:30] CRITICAL FAILS DETECTED:
+[21:02:30]   • Java not available
+[21:02:30] STATUS: FAIL (PROJECT NOT HEALTHY)

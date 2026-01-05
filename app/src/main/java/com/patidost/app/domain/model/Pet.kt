@@ -1,36 +1,32 @@
 package com.patidost.app.domain.model
 
-import kotlinx.serialization.Serializable
+import androidx.compose.runtime.Immutable
+import java.time.Instant
 
 /**
- * Pet Domain Model - 2026 PRODUCTION Standard.
- * RVWL: Corrected package name and synchronized with Phase 2 Action.
+ * Pet Domain Model - V10000.24000 Emotional Singularity Edition.
+ * Rule 102: Humble interface, powerful storytelling.
+ * RVWL: Integrated behavioral traits and rescue stories for global engagement.
  */
-@Serializable
+@Immutable
 data class Pet(
-    val id: String,
-    val name: String,
-    val species: String,
-    val breed: String,
-    val age: Int,
-    val imageUrl: String,
-    val price: Double,
-    val description: String,
-    val ownerId: String,
-    val createdAt: Long
+    val id: String = "",
+    val name: String = "",
+    val breed: String = "",
+    val species: String = "",
+    val age: Int = 0,
+    val price: Double = 0.0,
+    val ownerId: String = "",
+    val imageUrl: String = "",
+    val videoUrl: String? = null, // Global engagement booster
+    val description: String = "",
+    val rescueStory: String = "", // Emotional trigger
+    val personalityTraits: List<String> = emptyList(), // Personality Match
+    val isAdopted: Boolean = false,
+    val lastUpdated: Long = Instant.now().toEpochMilli(),
+    val syncStatus: SyncStatus = SyncStatus.SYNCED
 ) {
     companion object {
-        val EMPTY = Pet(
-            id = "",
-            name = "",
-            species = "",
-            breed = "",
-            age = 0,
-            imageUrl = "",
-            price = 0.0,
-            description = "",
-            ownerId = "",
-            createdAt = 0L
-        )
+        val EMPTY = Pet(id = "VOID_PET")
     }
 }

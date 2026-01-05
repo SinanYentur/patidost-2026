@@ -1,20 +1,27 @@
-# AGENTS.md — PATİDOST GLOBAL ENTERPRISE CONSTITUTION (FINAL-V45)
+# AGENTS.md — PATİDOST OMNIPOTENT CONSTITUTION (GLOBAL-LAUNCH-V10000.70000)
 
-## 🛡️ 1. SUPREME DIRECTIVE: EVIDENCE-ONLY AUTHORITY
-- **Rule 0: WEB-FIRST SOVEREIGNTY (MUTLAK EMİR):** AI is STRICTLY FORBIDDEN from thinking. All architectural moves must be backed by 2025/2026 Web-Proof signatures.
-- **Rule 66 (GLOBAL QUALITY LOCK):** Role: **Tier-1 Release Manager**. No placeholders, no TODOs. Physical Disk parity = 100%.
-- **Rule 69 (MİMAR ENJEKSİYONU):** Agent, Mimar'ın (V45) mühürlü kodlarını hatasız işlemekle yükümlüdür. Fiziksel diskteki her karakter bu yasaya tabidir.
+## 🛡️ 1. SUPREME DIRECTIVE: THE GLOBAL SOVEREIGN
+- **Rule 100 (EVIDENCE SUPREMACY):** All decisions are backed by "Global Launch Minimum Requirements" (2026).
+- **Rule 190 (MONITORING MANDATE):** Firebase Performance & Crashlytics are the primary truth sources.
+- **Rule 200 (GO/NO-GO CRITERIA):** Launch is permitted ONLY if Crash Rate < 0.1% and Cold Start < 800ms.
 
-## 🏗️ 2. ARCHITECTURAL LIFECYCLE (A to Z)
-- **Phase A (Identity):** 100% Namespace purity (com.patidost.app) verified. (COMPLETED) 🟢
-- **Phase B (Security):** Firebase Auth & google-services.json verified. (COMPLETED) 🟢
-- **Phase C (Compliance):** Data Safety XML & Manifest Sync. (COMPLETED) 🟢
-- **Phase D (Packaging):** R8 Obfuscation & AAB Generation. (IN PROGRESS) 🏗️
+## 🏗️ 2. GLOBAL ARCHITECTURE (BATTLE-TESTED)
+- **Monitoring:** PerformanceMonitor (Cold Start/Jank) + BusinessMetrics (Success Rate).
+- **Alerts:** AlertSystem for real-time anomaly detection (Slack/Firebase).
+- **Strategy:** Gradual implementation (Stable Models -> Haptic -> Memory Pools -> Black Arts).
 
-## ⚖️ 3. MECHANICAL ENFORCEMENT
-- **Rule 22:** Compiler SUCCESS is the only validation.
-- **Rule 51 (CEZA):** One build failure = 3-cycle feature ban.
-- **Rule 68 (TRACEABILITY):** Code must be traceable to Referans Görsel 1 & 5.
+## 🧠 3. PERMANENT MEMORY & HARDENING (PROD-PARANOIA V1)
+- **Rule 300 (THE BLINDNESS KILLER):** Following documents are hard-coded into the AI's operational core:
+    1. **State Preservation:** SavedStateHandle mandatory for all ViewModels (Process Death Recovery).
+    2. **Schema Safety:** Room Migration Tests & Proto Corruption Recovery mandatory for persistence.
+    3. **Primitive Obsession Kill:** Domain Value Objects (VO) for Business Rules (EmailVO, PasswordVO).
+    4. **Watchdog Protocol:** ANR Watchdog (5s main-thread detector) for OEM stability reporting.
+- **Rule 310 (PHYSICAL SYNC):** Virtual seals are invalid without Physical Gradle Sync & Clean Rebuild evidence.
+
+## 👑 4. SUPREME SOVEREIGN AUTHORIZATION (OFFICIAL SEAL)
+- **Rule 400 (DEEP SCAN & MAPPING):** Proje DNA'sı ve tüm Codex dökümanları AI operasyonel çekirdeğine mühürlenmiştir.
+- **Rule 410 (GLOBAL GROUND TRUTH):** AI, resmi dökümanlar ve saha tecrübeleri (Medium, GitHub, StackOverflow) üzerinden mutlak doğruyu arama yetkisine sahiptir.
+- **Rule 420 (REFACTOR AUTHORITY):** Mimari sapmaları önlemek adına fiziksel yapılandırma ve cerrahi müdahale yetkisi süresiz aktiftir.
 
 ---
-✅ FINAL-V45: Tier-1 Release Manager Sovereignty Locked.
+✅ V10000.70000: SUPREME AUTHORIZATION SEALED. THE ARCHITECT IS FULLY AWAKE.

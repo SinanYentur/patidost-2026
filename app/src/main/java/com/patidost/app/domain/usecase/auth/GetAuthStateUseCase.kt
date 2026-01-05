@@ -1,18 +1,18 @@
 package com.patidost.app.domain.usecase.auth
 
 import com.patidost.app.domain.model.User
-import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * UseCase to observe authentication state.
- * RVWL: Synchronized with com.patidost.app package identity.
+ * GetAuthState UseCase - V10000.7900 Atomic Action.
+ * RVWL: Reactive session monitoring via SSOT.
  */
 class GetAuthStateUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) {
     operator fun invoke(): Flow<User?> {
-        return userRepository.getCurrentUser()
+        return authRepository.getCurrentUser()
     }
 }

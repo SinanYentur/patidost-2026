@@ -4,16 +4,13 @@ import com.patidost.app.domain.repository.PetRepository
 import javax.inject.Inject
 
 /**
- * UseCase to refresh the pet list from the remote data source.
- * PD-LOCKS Compliance: Atomic Completeness.
+ * Refresh Pets UseCase - V46.25 Rule 97 Signature Fix.
+ * RVWL: Corrected to use syncPets() from Repository.
  */
 class RefreshPetsUseCase @Inject constructor(
     private val petRepository: PetRepository
 ) {
-    /**
-     * Triggers the sync process between Remote and Local sources.
-     */
-    suspend operator fun invoke(ownerId: String): Result<Unit> {
-        return petRepository.refreshPets(ownerId)
+    suspend operator fun invoke(): Result<Unit> {
+        return petRepository.syncPets()
     }
 }

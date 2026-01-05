@@ -6,16 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
- * Use Case to fetch pets belonging to a specific owner.
- * RVWL: Synchronized with com.patidost.app package identity.
+ * 🛡️ Rule 100: Pure Domain Implementation.
+ * Fetches the Single Source of Truth (SSOT) stream of pets.
  */
 class GetPetsUseCase @Inject constructor(
-    private val petRepository: PetRepository
+    private val repository: PetRepository
 ) {
-    /**
-     * Returns a reactive flow of pets.
-     */
-    operator fun invoke(ownerId: String): Flow<List<Pet>> {
-        return petRepository.getPetsByOwner(ownerId)
-    }
+    operator fun invoke(): Flow<List<Pet>> = repository.getPets()
 }

@@ -1,0 +1,20 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "name": "Patidost Enterprise SBOM",
+  "documentNamespace": "https://patidost.com/sbom/v1.0.0",
+  "creator": {
+    "organization": "Patidost Sovereign",
+    "tool": "SBOMGenerator-1.0.0"
+  },
+  "creationInfo": {
+    "created": "2026-01-02T12:00:00Z"
+  },
+  "packages": [
+    {
+      "name": "Patidost-App",
+      "versionInfo": "1.0.0",
+      "licenseDeclared": "Apache-2.0"
+    }
+  ]
+}

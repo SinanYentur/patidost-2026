@@ -1,16 +1,16 @@
 package com.patidost.app.domain.usecase.auth
 
-import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.repository.AuthRepository
 import javax.inject.Inject
 
 /**
- * UseCase to delete the current user account.
- * RVWL: Synchronized with com.patidost.app package identity.
+ * DeleteUser UseCase - V3000.70 Atomic Action.
+ * RVWL: GDPR Article 17 Compliance - Permanent Account Deletion.
  */
 class DeleteUserUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(): Result<Unit> {
-        return userRepository.deleteAccount()
+        return authRepository.deleteAccount()
     }
 }

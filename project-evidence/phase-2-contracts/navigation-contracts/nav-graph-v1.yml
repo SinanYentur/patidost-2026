@@ -1,0 +1,12 @@
+navigation:
+  version: 1.0.0
+  root: auth
+  flows:
+    auth:
+      screens: [login, register]
+      transitions: [onSuccess -> pet_list]
+    pet:
+      screens: [list, detail, discover]
+      transitions: [onPetClick -> pet_detail]
+    cart:
+      screens: [main, success]

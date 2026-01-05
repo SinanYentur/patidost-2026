@@ -1,24 +1,37 @@
-# Patidost 2026 PRODUCTION Standard R8 Rules
-# RVWL: Synchronized with com.patidost.app and API 36 behavior.
+# ProGuard Rules - V10000.19500 Sovereign Optimization
+# Rule 102: Simple, humble, but powerful obfuscation.
 
-# Keep domain models from obfuscation (Firebase/Serialization requirement)
--keepclassmembers class com.patidost.app.domain.model.** { *; }
--keep class com.patidost.app.domain.model.** { *; }
+# 1. Google Play Billing Library 8.1.0
+-keep class com.android.billingclient.api.** { *; }
+-keep class com.google.android.gms.internal.play_billing.** { *; }
 
-# Hilt/Dagger generated code preservation
--keep class com.patidost.app.**_HiltModules* { *; }
--keep class dagger.hilt.android.internal.managers.** { *; }
-
-# Coil/AsyncImage optimization
--keep class coil.** { *; }
--dontwarn coil.**
-
-# Firebase/Firestore internal stability
+# 2. Firebase & Firestore 2026
 -keep class com.google.firebase.** { *; }
+-keep class com.google.android.gms.** { *; }
+-keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
 -dontwarn com.google.firebase.**
 
-# Rule 47 Evidence: Preserve Kotlin Serialization descriptors
--keepclassmembers class ** {
-    *** Companion;
-    *** $serializer;
+# 3. Kotlin Multiplatform & Serialization
+-keep class kotlinx.serialization.json.** { *; }
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+
+# 4. Hilt & Dagger
+-keep class dagger.hilt.** { *; }
+-keep @dagger.hilt.android.lifecycle.HiltViewModel class * extends androidx.lifecycle.ViewModel
+
+# 5. Signal Protocol (E2EE) & PQC
+-keep class org.whispersystems.libsignal.** { *; }
+-keep class org.bouncycastle.** { *; }
+
+# 6. Domain Models (Immutable)
+-keep class com.patidost.app.domain.model.** { *; }
+
+# 7. Optimization
+-repackageclasses ''
+-allowaccessmodification
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+-assumenosideeffects class timber.log.Timber {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
 }

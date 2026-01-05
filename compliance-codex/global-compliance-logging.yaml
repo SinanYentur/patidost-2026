@@ -1,0 +1,15 @@
+# Compliance Configuration - V10000.11600
+frameworks:
+  gdpr_ai:
+    article_22: true
+    automated_decision_logging: true
+  eu_ai_act_2026:
+    risk_category: high
+    conformity_assessment: required
+  google_play_2026:
+    ai_disclosure: true
+    data_poisoning_protection: true
+
+logging:
+  retention_period_days: 730
+  required_logs: ["ai_model_versions", "training_data_provenance", "inference_decisions"]

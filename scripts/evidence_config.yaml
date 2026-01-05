@@ -1,0 +1,15 @@
+# Global Evidence Collection Configuration - V10000.310
+version: "2.0"
+platforms:
+  ios:
+    log_sources: ["system.log", "xcodebuild.log"]
+    artifacts: ["*.ipa", "*.dSYM"]
+  android:
+    screenshot_paths: ["/sdcard/Pictures/Screenshots"]
+    log_sources: ["logcat", "adb_logs"]
+    artifacts: ["*.apk", "*.aab"]
+
+quality_gates:
+  minimum_screenshots: 1
+  require_test_results: true
+  validate_checksums: true

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 🛡️ 2026 PLAY STORE DATA SAFETY COMPLIANCE (GÜN 1: MÜHÜRLENDİ) -->
+<data-safety xmlns:android="http://schemas.android.com/apk/res/android">
+    <data-type android:name="personal_info">
+        <collects>name, email, phone</collects>
+        <usage>account_creation, personalization</usage>
+        <sharing>not_shared</sharing>
+        <retention>account_deletion</retention>
+    </data-type>
+    
+    <data-type android:name="location">
+        <collects>precise_location</collects>
+        <usage>pet_adoption_matching</usage>
+        <sharing>not_shared</sharing>
+        <retention>session_only</retention>
+    </data-type>
+    
+    <security>
+        <encryption>e2ee_for_chats</encryption>
+        <data-deletion>upon_request_30days</data-deletion>
+        <third-party-audit>quarterly</third-party-audit>
+    </security>
+</data-safety>

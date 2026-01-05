@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: Patidost Enterprise Pet API
+  version: 1.0.0
+paths:
+  /pets:
+    get:
+      summary: Get all available pets
+      responses:
+        '200':
+          description: Successful response
+  /auth/login:
+    post:
+      summary: Enterprise Authentication
+      responses:
+        '200':
+          description: Session Token issued

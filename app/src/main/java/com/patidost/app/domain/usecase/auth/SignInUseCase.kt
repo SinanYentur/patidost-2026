@@ -1,17 +1,25 @@
 package com.patidost.app.domain.usecase.auth
 
-import com.patidost.app.domain.model.User
 import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.util.DomainResult
+import com.patidost.app.domain.model.valueobject.EmailVO
+import com.patidost.app.domain.model.valueobject.PasswordVO
+import com.patidost.app.di.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
- * UseCase to sign in a user.
- * RVWL: Synchronized with com.patidost.app package identity.
+ * 🛡️ Rule 300: Domain Security Hardening.
+ * Replaced String parameters with atomic Value Objects.
  */
 class SignInUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val repository: UserRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(email: String, pass: String): Result<User> {
-        return userRepository.signIn(email, pass)
-    }
+    suspend operator fun invoke(email: EmailVO, pass: PasswordVO): DomainResult<com.patidost.app.domain.model.User> =
+        withContext(ioDispatcher) {
+            // Validation is now enforced at the Type level (EmailVO/PasswordVO)
+            repository.signIn(email.value, pass.value)
+        }
 }

@@ -1,0 +1,126 @@
+=== TITAN AUDIT START Sat Jan  3 19:10:07 TSS 2026 ===
+Project: /c/Users/Kratos35/AndroidStudioProjects/patidost
+Git Hash: aa55ec2
+
+--- [1] CORE VALIDATION ---
+
+------------------------------------------------------------
+Gradle 8.13
+------------------------------------------------------------
+
+Build time:    2025-02-25 09:22:14 UTC
+Revision:      073314332697ba45c16c0a0ce1891fa6794179ff
+
+Kotlin:        2.0.21
+Groovy:        3.0.22
+Ant:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024
+Launcher JVM:  17.0.17 (Eclipse Adoptium 17.0.17+10)
+Daemon JVM:    C:\Program Files\Eclipse Adoptium\jdk-17.0.17.10-hotspot (no JDK specified, using current Java home)
+OS:            Windows 11 10.0 amd64
+
+
+--- [2] BUILD INTEGRITY ---
+> Task :app:clean UP-TO-DATE
+> Task :baselineprofile:clean UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+2 actionable tasks: 2 up-to-date
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:forbiddenKeywordScan
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig
+> Task :app:checkDebugAarMetadata
+> Task :app:processDebugNavigationResources
+> Task :app:generateDebugResValues
+> Task :app:compileDebugNavigationResources
+> Task :app:processDebugGoogleServices
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:mergeDebugResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:compressDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs
+> Task :app:checkDebugDuplicateClasses
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:mergeLibDexDebug
+> Task :app:processDebugManifestForPackage
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:processDebugResources
+> Task :app:mergeExtDexDebug
+> Task :app:kspDebugKotlin
+> Task :app:compileDebugKotlin
+> Task :app:compileDebugJavaWithJavac
+> Task :app:hiltAggregateDepsDebug
+> Task :app:hiltJavaCompileDebug
+> Task :app:processDebugJavaRes
+> Task :app:transformDebugClassesWithAsm
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 54s
+45 actionable tasks: 45 executed
+✓ Build successful
+
+--- [3] ARCHITECTURE ENFORCEMENT ---
+✓ Architecture validated
+
+--- [4] CODE QUALITY ---
+if grep -r "echo -e "\n--- [4] CODE QUALITY ---"" app/src/main/java 2>/dev/null; then
+⚠️ Kotlin opt-in not configured
+
+--- [5] UI STANDARDS ---
+app/src/main/java/com/patidost/app/MainActivity.kt:import androidx.activity.enableEdgeToEdge
+app/src/main/java/com/patidost/app/MainActivity.kt:        enableEdgeToEdge() // API 36 Mandatory Requirement
+app/src/main/java/com/patidost/app/ui/theme/Theme.kt:            WindowCompat.setDecorFitsSystemWindows(window, false)
+✓ Edge-to-edge enabled
+app/src/main/java/com/patidost/app/ui/component/GlassComponents.kt:import androidx.compose.material3.MaterialTheme
+app/src/main/java/com/patidost/app/ui/screen/auth/AuthScreen.kt:                    style = MaterialTheme.typography.headlineLarge,
+app/src/main/java/com/patidost/app/ui/screen/auth/AuthScreen.kt:                    shape = MaterialTheme.shapes.large
+app/src/main/java/com/patidost/app/ui/screen/auth/AuthScreen.kt:                style = MaterialTheme.typography.bodySmall,
+app/src/main/java/com/patidost/app/ui/screen/auth/AuthScreen.kt:        shape = MaterialTheme.shapes.medium,
+app/src/main/java/com/patidost/app/ui/screen/pet/PetCard.kt:import androidx.compose.material3.MaterialTheme
+app/src/main/java/com/patidost/app/ui/screen/pet/PetCard.kt:                        .background(PatiGold.copy(alpha = 0.8f), MaterialTheme.shapes.small)
+app/src/main/java/com/patidost/app/ui/screen/pet/PetCard.kt:                    style = MaterialTheme.typography.titleLarge,
+app/src/main/java/com/patidost/app/ui/screen/pet/PetCard.kt:                    style = MaterialTheme.typography.bodySmall,
+app/src/main/java/com/patidost/app/ui/screen/pet/PetDetailScreen.kt:                                .background(GlassWhite, MaterialTheme.shapes.medium)
+app/src/main/java/com/patidost/app/ui/screen/pet/PetDetailScreen.kt:                                        style = MaterialTheme.typography.headlineMedium,
+app/src/main/java/com/patidost/app/ui/screen/pet/PetDetailScreen.kt:                                        .background(PatiGoldGlow, MaterialTheme.shapes.medium)
+app/src/main/java/com/patidost/app/ui/screen/pet/PetDetailScreen.kt:                                style = MaterialTheme.typography.titleMedium,
+app/src/main/java/com/patidost/app/ui/theme/Theme.kt:import androidx.compose.material3.MaterialTheme
+app/src/main/java/com/patidost/app/ui/theme/Theme.kt:    MaterialTheme(
+✓ Material3 theme found
+
+--- [6] LAYER ISOLATION ---
+✓ Domain repos: 3, Data impls: 3
+
+--- [7] DATABASE INTEGRITY ---
+app/src/main/java/com/patidost/app/data/local/database/PatidostDatabase.kt:@Database(
+✓ Room Database found
+❌ Schema export disabled (version control violation)
+exit

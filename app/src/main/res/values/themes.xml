@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Modern Splash API Entegrasyonu -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FAFAFA</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
+        <item name="postSplashScreenTheme">@style/Theme.Patidost</item>
+    </style>
 
-    <style name="Theme.Patidost" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Ana Uygulama Teması - Uyumlu Temel -->
+    <style name="Theme.Patidost" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>

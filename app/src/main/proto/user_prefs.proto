@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option java_package = "com.patidost.app";
+option java_multiple_files = true;
+
+message UserPreferences {
+    bool has_completed_onboarding = 1;
+    string last_sync_timestamp = 2;
+    string selected_theme = 3;
+}

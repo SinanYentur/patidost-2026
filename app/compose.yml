@@ -1,0 +1,22 @@
+# 🛡️ SOVEREIGN CI/DEV INFRASTRUCTURE v1.0
+# Rule 400: Deterministic environment for automated testing.
+version: '3.8'
+
+services:
+  emulator:
+    image: "android-emulator:api-35"
+    privileged: true
+    devices:
+      - "/dev/kvm:/dev/kvm"
+    environment:
+      - EMU_PARAMS=-no-window -gpu swiftshader_indirect -no-audio -no-boot-anim
+    volumes:
+      - ./.emulator/avd:/root/.android/avd
+
+  mock-api:
+    image: "mockoon/cli:latest"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./tests/mock-api-data.json:/data
+    command: ["--data", "/data", "--port", "3001"]

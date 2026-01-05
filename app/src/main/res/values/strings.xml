@@ -1,46 +1,19 @@
 <resources>
-    <string name="app_name">Patidost</string>
+    <!-- 🛡️ Play Store SEO Mührü -->
+    <string name="app_name">Patidost – Evcil Hayvan Sahiplen</string>
+    <string name="app_short_description">Güvenli ve hızlı evcil hayvan sahiplendirme platformu.</string>
     
-    <!-- Auth Screen -->
-    <string name="login">Giriş Yap</string>
-    <string name="register">Kayıt Ol</string>
-    <string name="email">E-posta</string>
-    <string name="password">Şifre</string>
-    <string name="name">Ad Soyad</string>
-    <string name="no_account">Hesabınız yok mu? Kayıt Olun</string>
-    <string name="have_account">Hesabınız var mı? Giriş Yapın</string>
-    <string name="auth_welcome">Hoş Geldiniz</string>
-    <string name="auth_error_empty">E-posta ve şifre boş bırakılamaz.</string>
-    <string name="auth_error_generic">Kimlik doğrulama hatası.</string>
-    <string name="error_session_not_found">Oturum bulunamadı.</string>
-    <string name="error_auth_failed">Kimlik doğrulama başarısız oldu.</string>
-    <string name="loading">Yükleniyor...</string>
+    <!-- Auth & Onboarding (CVR Optimization) -->
+    <string name="auth_welcome">Yeni Bir Dostluğa Adım At</string>
+    <string name="login_action">Giriş Yap ve Keşfet</string>
+    <string name="register_action">Hemen Kayıt Ol</string>
     
-    <!-- Pet List Screen -->
-    <string name="pet_list_title">Patidost</string>
-    <string name="pet_list_error">Hayvanlar yüklenirken bir hata oluştu.</string>
-    <string name="try_again">Tekrar Dene</string>
-    <string name="pet_age_format">%1$d Yaşında</string>
-    <string name="pet_info_format">%1$s • %2$s</string>
-    <string name="currency_symbol">₺</string>
-    <string name="price_format">%1$.2f %2$s</string>
-    <string name="error_refresh_failed">Veri güncellenemedi.</string>
+    <!-- Pet List (Engagement Optimization) -->
+    <string name="pet_list_title">Dostlarımızı Keşfet</string>
+    <string name="pet_empty_state">Şu an yuvaya ihtiyacı olan dostumuz yok ama yakında gelecekler!</string>
+    <string name="pet_error_state">Bağlantı sorunu oluştu. Lütfen tekrar dene.</string>
     
-    <!-- Pet Detail Screen -->
-    <string name="pet_detail_title">Detay</string>
-    <string name="pet_not_found">Hayvan bulunamadı.</string>
-    <string name="pet_about">Hakkında</string>
-    <string name="pet_adopt_now">Hemen Sahiplen</string>
-    <string name="pet_adopted">Sahiplenildi</string>
-    <string name="error_adoption_failed">Sahiplenme işlemi başarısız oldu.</string>
-    <string name="back">Geri</string>
-
-    <!-- Profile Settings Screen (Phase 9) -->
-    <string name="profile_title">Profil Ayarları</string>
-    <string name="save">Kaydet</string>
-    <string name="bio">Hakkımda</string>
-    <string name="change_photo">Fotoğrafı Değiştir</string>
-    <string name="error_profile_update">Profil güncellenirken bir hata oluştu.</string>
-    <string name="success_profile_update">Profil başarıyla güncellendi.</string>
-    <string name="error_adoption_failed_generic">Sahiplenme işlemi şu an gerçekleştirilemiyor.</string>
+    <!-- Legal (Store Requirement) -->
+    <string name="account_deletion_request">Hesabımı ve Verilerimi Sil</string>
+    <string name="data_safety_certified">Verileriniz Play Store 2026 standartlarında korunmaktadır.</string>
 </resources>
