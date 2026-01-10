@@ -13,8 +13,8 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /**
- * Repository Module - V48.50 Rule 97 DI Purity.
- * RVWL: Unified interface bindings for Auth, Pet, and User.
+ * Repository Module - V48.52 Rule 97 DI Purity.
+ * RVWL: Restored correct bindings for AuthRepository and UserRepository.
  */
 @Module
 @InstallIn(SingletonComponent::class)

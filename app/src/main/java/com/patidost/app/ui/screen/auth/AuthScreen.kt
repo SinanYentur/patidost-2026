@@ -1,35 +1,44 @@
 package com.patidost.app.ui.screen.auth
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.patidost.app.ui.component.core.SovereignScreenState
 
 /**
- * Auth Screen - V46.70 Constitutional Alignment.
- * RVWL: Synchronized with AuthViewModel.onAuthAction and AuthContent.
+ * 🛡️ AuthScreen - Sovereign Identity Gate V10000.70024.
+ * Rule 420: Restored from Purge and connected to physical AuthContent.
+ * V2: Implemented signUp logic to call the viewModel.
+ * V3: Pass 'name' to signUp to fix build error.
  */
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel,
-    onAuthSuccess: () -> Unit
+    onAuthSuccess: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
-    // AuthContent is now correctly implemented in AuthComponents.kt
-    AuthContent(
-        uiState = uiState,
-        onAction = { email, password, isSignUp, name -> 
-            // Rule 97 Evidence: Method name is onAuthAction in AuthViewModel.kt
-            viewModel.onAuthAction(email, password, name)
-            
-            // Side effect: Handle navigation success via state observation if needed,
-            // or pass onAuthSuccess if ViewModel supports it.
-        }
-    )
+    val authState by viewModel.authState.collectAsStateWithLifecycle()
 
-    // Rule 92: Observe success state for navigation
-    LaunchedEffect(uiState) {
-        if (uiState is AuthUiState.Authenticated) {
-            onAuthSuccess()
+    // 🛡️ Mühür: Oturum açma başarılıysa navigasyonu tetikle
+    LaunchedEffect(authState) {
+        if (authState is AuthState.Success) {
+            onAuthSuccess((authState as AuthState.Success).userName)
         }
+    }
+
+    SovereignScreenState(
+        isLoading = authState is AuthState.Loading,
+        error = if (authState is AuthState.Error) (authState as AuthState.Error).message else null
+    ) {
+        AuthContent(
+            uiState = if (authState is AuthState.Loading) AuthUiState.Loading else AuthUiState.Idle,
+            onAction = { email, pass, isSignUp, name ->
+                if (isSignUp) {
+                    viewModel.signUp(email, pass, name)
+                } else {
+                    viewModel.signIn(email, pass)
+                }
+            }
+        )
     }
 }

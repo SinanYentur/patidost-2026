@@ -1,14 +1,21 @@
 package com.patidost.app.util
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * 🛡️ FeatureFlagManager - V10000.70023 Sovereign Config.
+ * Rule 420: Fixed KTX resolution and modernized Firebase implementation.
+ */
 @Singleton
 class FeatureFlagManager @Inject constructor() {
     private val remoteConfig = FirebaseRemoteConfig.getInstance().apply {
-        setConfigSettingsAsync(remoteConfigSettings { minimumFetchIntervalInSeconds = 3600 })
+        val configSettings = FirebaseRemoteConfigSettings.Builder()
+            .setMinimumFetchIntervalInSeconds(3600)
+            .build()
+        setConfigSettingsAsync(configSettings)
     }
 
     fun isEnabled(flag: String): Boolean = remoteConfig.getBoolean(flag)

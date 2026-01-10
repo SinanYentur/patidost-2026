@@ -2,16 +2,18 @@ package com.patidost.app.domain.usecase.auth
 
 import com.patidost.app.domain.model.User
 import com.patidost.app.domain.repository.AuthRepository
+import com.patidost.app.domain.util.DomainResult
 import javax.inject.Inject
 
 /**
  * SignInWithFacebook UseCase - V10000.8300 Social Identity.
  * RVWL: Formal execution of Facebook Federated Authentication.
+ * V2: Synchronized with DomainResult standard.
  */
 class SignInWithFacebookUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(): Result<User> {
+    suspend operator fun invoke(): DomainResult<User> {
         return authRepository.signInWithFacebook()
     }
 }

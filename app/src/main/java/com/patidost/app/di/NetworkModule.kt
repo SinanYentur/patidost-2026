@@ -1,39 +1,36 @@
 package com.patidost.app.di
 
-import android.content.Context
-import coil.ImageLoader
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
-/**
- * 🛡️ FAZ 5: RESOURCE HARDENING
- * Rule 190: Network and cache efficiency for Play Store Vitals.
- */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
-        ImageLoader.Builder(context)
-            .memoryCache {
-                MemoryCache.Builder(context)
-                    .maxSizePercent(0.15) // 📐 Optimized: 15% RAM for better OEM compatibility
-                    .build()
+    fun provideHttpClient(): HttpClient {
+        return HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
             }
-            .diskCache {
-                DiskCache.Builder()
-                    .directory(context.cacheDir.resolve("image_cache"))
-                    .maxSizePercent(0.02)
-                    .build()
+            install(Logging) {
+                level = LogLevel.ALL
             }
-            .respectCacheHeaders(true) // 🛡️ Mühür: Respect CDN policies to prevent battery drain
-            .build()
+        }
+    }
 }

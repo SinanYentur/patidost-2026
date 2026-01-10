@@ -1,16 +1,16 @@
 package com.patidost.app.domain.usecase.pet
 
 import com.patidost.app.domain.repository.PetRepository
+import com.patidost.app.domain.util.DomainResult
 import javax.inject.Inject
 
 /**
- * Adopt Pet UseCase - V46.24 Rule 97 Signature Fix.
- * RVWL: Synchronized with PetRepository.adoptPet(petId).
+ * 🛡️ AdoptPetUseCase - Fixed: Standardized DomainResult return type.
  */
 class AdoptPetUseCase @Inject constructor(
-    private val petRepository: PetRepository
+    private val repository: PetRepository
 ) {
-    suspend operator fun invoke(petId: String): Result<Unit> {
-        return petRepository.adoptPet(petId)
+    suspend operator fun invoke(petId: String): DomainResult<Unit> {
+        return repository.adoptPet(petId)
     }
 }

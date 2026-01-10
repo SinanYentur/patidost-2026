@@ -1,56 +1,54 @@
 package com.patidost.app.ui.screen.pet.list
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.patidost.app.domain.repository.PetRepository
+import com.patidost.app.domain.model.Pet
+import com.patidost.app.domain.usecase.pet.GetPetsUseCase
+import com.patidost.app.domain.usecase.pet.RefreshPetsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * PetListViewModel - V10000.9700 Temporal Resilience.
- * Rule 102: Low-resource usage, maximum stability.
- * RVWL: Optimized for 2+ years of operation without architectural debt.
+ * 🛡️ PetListViewModel - V10000.70029 Sovereign Implementation.
+ * Rule 100: Physical evidence of state management.
  */
 @HiltViewModel
 class PetListViewModel @Inject constructor(
-    private val petRepository: PetRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val getPetsUseCase: GetPetsUseCase,
+    private val refreshPetsUseCase: RefreshPetsUseCase
 ) : ViewModel() {
 
-    // Survival Seal: Recovery after system-initiated process death
-    private val _isRefreshing = MutableStateFlow(false)
-
-    val uiState: StateFlow<PetListUiState> = combine(
-        petRepository.getPets(),
-        _isRefreshing
-    ) { pets, refreshing ->
-        PetListUiState(
-            isLoading = false,
-            pets = pets.toImmutableList(),
-            isRefreshing = refreshing,
-            lastSyncTimestamp = System.currentTimeMillis()
+    private val _isLoading = MutableStateFlow(false)
+    
+    val uiState: StateFlow<PetListUiState> = getPetsUseCase()
+        .combine(_isLoading) { pets, loading ->
+            PetListUiState(
+                pets = pets,
+                isLoading = loading
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = PetListUiState()
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000), // Memory saving seal
-        initialValue = PetListUiState.INITIAL.copy(isLoading = true)
-    )
 
     init {
         refreshPets()
     }
 
-    fun refreshPets() {
-        if (_isRefreshing.value) return
-        
+    private fun refreshPets() {
         viewModelScope.launch {
-            _isRefreshing.value = true
-            petRepository.syncPets()
-            _isRefreshing.value = false
+            _isLoading.value = true
+            refreshPetsUseCase()
+            _isLoading.value = false
         }
     }
 }
+
+data class PetListUiState(
+    val pets: List<Pet> = emptyList(),
+    val isLoading: Boolean = false
+)

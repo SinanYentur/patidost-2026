@@ -1,0 +1,16 @@
+# 📜 PATİDOST OPERASYONEL GÜNLÜK (DEV_LOG) - V10000.70029
+
+## ✅ TAMAMLANAN MÜHÜRLER (Fiziksel Onaylı)
+1. **Lojistik:** build.gradle.kts içinde Protobuf (javalite/kotlin-lite) ve Firebase AppCheck mühürlendi.
+2. **Domain:** User.kt ve AuthRepository.kt hayali referanslardan arındırıldı, mühürlendi.
+3. **DI:** UserRepositoryImpl oluşturuldu ve AppModule üzerinden kablolar bağlandı.
+4. **Data:** PetEntity tek kaynağa (data/model) indirildi, DAO ve Mapper senkronize edildi.
+5. **Sinir Sistemi:** PetListViewModel fiziksel yoluna (ui/screen/pet/list) taşındı.
+
+## ⚠️ İNŞAAT HALİNDEKİ KRİTİK YERLER
+1. **CartScreen.kt:** 'dp' importu eksik, derleme hatası veriyor. (HEDEF: androidx.compose.ui.unit.dp eklenmeli).
+2. **HomeScreen.kt:** ViewModel import yolu fiziksel yerleşime (pet.list) göre sabitlenmeli.
+3. **Protobuf:** UserPreferencesKt için 'Generate Project' sonrası classpath kontrolü yapılmalı.
+
+## 🏁 BİR SONRAKİ ADIM
+CartScreen.kt üzerindeki 'dp' hatasını temizle ve compileDebugKotlin sonucunu fiziksel olarak raporla.

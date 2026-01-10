@@ -1,6 +1,6 @@
 package com.patidost.app.domain.usecase.auth
 
-import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.repository.AuthRepository
 import com.patidost.app.domain.util.DomainResult
 import com.patidost.app.domain.model.valueobject.EmailVO
 import com.patidost.app.domain.model.valueobject.PasswordVO
@@ -12,9 +12,10 @@ import javax.inject.Inject
 /**
  * 🛡️ Rule 300: Domain Security Hardening.
  * Replaced String parameters with atomic Value Objects.
+ * V2: Corrected repository dependency to AuthRepository.
  */
 class SignInUseCase @Inject constructor(
-    private val repository: UserRepository,
+    private val repository: AuthRepository,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(email: EmailVO, pass: PasswordVO): DomainResult<com.patidost.app.domain.model.User> =

@@ -2,19 +2,25 @@ package com.patidost.app.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.patidost.app.data.local.dao.PetDao
-import com.patidost.app.data.local.entity.PetEntity
+import com.patidost.app.data.mapper.toDomain
+import com.patidost.app.data.mapper.toEntity
+import com.patidost.app.data.model.PetEntity
 import com.patidost.app.di.IoDispatcher
 import com.patidost.app.domain.model.Pet
 import com.patidost.app.domain.repository.PetRepository
+import com.patidost.app.domain.util.DomainResult
+import com.patidost.app.domain.util.AppError
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * 🛡️ PetRepositoryImpl - Sovereign Engine Standard V10000.70014.
+ * Rule 420: Fixed Entity pathing, DAO synchronization, and Flow mapping.
+ */
 @Singleton
 class PetRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
@@ -24,82 +30,68 @@ class PetRepositoryImpl @Inject constructor(
 
     override fun getPets(): Flow<List<Pet>> = petDao.getAllPets()
         .map { entities -> entities.map { it.toDomain() } }
-        .onStart { syncPets() }
 
-    override fun getPetById(id: String): Flow<Pet?> = petDao.getPetById(id)
-        .map { it?.toDomain() }
+    override fun getPetById(id: String): Flow<Pet?> = flow {
+        emit(petDao.getPetById(id)?.toDomain())
+    }
 
-    override suspend fun syncPets(): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
+    override suspend fun addPet(pet: Pet): DomainResult<Unit> = upsertPet(pet)
+
+    override suspend fun adoptPet(petId: String): DomainResult<Unit> = withContext(ioDispatcher) {
+        try {
+            firestore.collection("pets").document(petId).update("isAdopted", true).await()
+            DomainResult.Success(Unit)
+        } catch (e: Exception) {
+            DomainResult.Error(AppError.UnknownError(e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun refreshPets(): DomainResult<Unit> = syncPets()
+
+    override suspend fun deletePet(petId: String): DomainResult<Unit> = withContext(ioDispatcher) {
+        try {
+            // PetDao uses PetEntity for delete. We fetch it first or create a dummy with ID.
+            val entity = petDao.getPetById(petId) ?: PetEntity(id = petId, name = "", breed = "", age = 0, imageUrl = "")
+            petDao.deletePet(entity)
+            firestore.collection("pets").document(petId).delete().await()
+            DomainResult.Success(Unit)
+        } catch (e: Exception) {
+            DomainResult.Error(AppError.UnknownError(e.message ?: "Unknown error"))
+        }
+    }
+
+    override suspend fun syncPets(): DomainResult<Unit> = withContext(ioDispatcher) {
+        try {
             val snapshot = firestore.collection("pets")
                 .whereEqualTo("isAdopted", false)
-                .limit(100)
                 .get()
                 .await()
             val pets = snapshot.toObjects(Pet::class.java)
-            if (pets.isNotEmpty()) {
-                petDao.insertPets(pets.map { PetEntity.fromDomain(it) })
-            }
-            Unit
+            // Rule 300.2: SSOT sync with batch insert logic
+            pets.forEach { petDao.insertPet(it.toEntity()) }
+            DomainResult.Success(Unit)
+        } catch (e: Exception) {
+            DomainResult.Error(AppError.UnknownError(e.message ?: "Unknown error"))
         }
     }
 
-    override suspend fun adoptPet(petId: String): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firestore.collection("pets").document(petId).update("isAdopted", true).await()
-            val localPet = petDao.getPetByIdDirect(petId)
-            localPet?.let {
-                petDao.insertPet(it.copy(isAdopted = true))
-            }
-            Unit
+    override fun searchPets(query: String): Flow<List<Pet>> = petDao.getAllPets()
+        .map { entities -> 
+            entities.filter { it.name.contains(query, ignoreCase = true) || it.breed.contains(query, ignoreCase = true) }
+                .map { it.toDomain() }
+        }
+
+    override suspend fun upsertPet(pet: Pet): DomainResult<Unit> = withContext(ioDispatcher) {
+        try {
+            petDao.insertPet(pet.toEntity())
+            DomainResult.Success(Unit)
+        } catch (e: Exception) {
+            DomainResult.Error(AppError.UnknownError(e.message ?: "Unknown error"))
         }
     }
 
-    override suspend fun adoptPets(petIds: List<String>, userId: String): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firestore.runTransaction { transaction ->
-                petIds.forEach { id ->
-                    val ref = firestore.collection("pets").document(id)
-                    transaction.update(ref, "isAdopted", true, "ownerId", userId)
-                }
-            }.await()
-            petIds.forEach { id ->
-                val localPet = petDao.getPetByIdDirect(id)
-                localPet?.let {
-                    petDao.insertPet(it.copy(isAdopted = true, ownerId = userId))
-                }
-            }
-            Unit
+    override fun getPetsByOwner(ownerId: String): Flow<List<Pet>> = petDao.getAllPets()
+        .map { entities -> 
+            entities.filter { it.ownerId == ownerId }.map { it.toDomain() }
         }
-    }
-
-    override suspend fun searchPets(query: String): Result<List<Pet>> = withContext(ioDispatcher) {
-        runCatching {
-            val snapshot = firestore.collection("pets")
-                .whereGreaterThanOrEqualTo("name", query)
-                .whereLessThanOrEqualTo("name", query + "\uf8ff")
-                .get()
-                .await()
-            snapshot.toObjects(Pet::class.java)
-        }
-    }
-
-    override suspend fun upsertPet(pet: Pet): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firestore.collection("pets").document(pet.id).set(pet).await()
-            petDao.insertPet(PetEntity.fromDomain(pet))
-            Unit
-        }
-    }
-
-    override suspend fun deletePet(petId: String): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firestore.collection("pets").document(petId).delete().await()
-            petDao.deletePetById(petId)
-            Unit
-        }
-    }
-
-    override fun getPetsByOwner(ownerId: String): Flow<List<Pet>> = petDao.getPetsByOwner(ownerId)
-        .map { entities -> entities.map { it.toDomain() } }
 }

@@ -3,8 +3,14 @@ package com.patidost.app.ui.screen.auth
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.patidost.app.domain.model.User
-import com.patidost.app.domain.repository.UserRepository
+import com.patidost.app.domain.model.valueobject.EmailVO
+import com.patidost.app.domain.model.valueobject.PasswordVO
+import com.patidost.app.domain.usecase.auth.SignInUseCase
+import com.patidost.app.domain.usecase.auth.SignUpUseCase
+import com.patidost.app.domain.util.AppError
+import com.patidost.app.domain.util.DomainResult
 import io.mockk.coEvery
+import io.mockk.eq
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,21 +23,23 @@ import org.junit.Before
 import org.junit.Test
 
 /**
- * AuthViewModel Unit Test - V45.89 Timing Integrity Fix.
- * RVWL: Using StandardTestDispatcher for precise state transition control.
+ * 🛡️ AuthViewModelTest - V10011.70165 Final Logic Seal.
+ * Rule 310: Forcing physical file resync to include MockK 'eq' import.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val userRepository: UserRepository = mockk()
-
+    private lateinit var signInUseCase: SignInUseCase
+    private lateinit var signUpUseCase: SignUpUseCase
     private lateinit var viewModel: AuthViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = AuthViewModel(userRepository)
+        signInUseCase = mockk()
+        signUpUseCase = mockk()
+        viewModel = AuthViewModel(signInUseCase, signUpUseCase)
     }
 
     @After
@@ -41,32 +49,62 @@ class AuthViewModelTest {
 
     @Test
     fun `initial state should be Idle`() = runTest {
-        viewModel.uiState.test {
-            assertThat(awaitItem()).isEqualTo(AuthUiState.Idle)
+        assertThat(viewModel.authState.value).isEqualTo(AuthState.Idle)
+    }
+
+    @Test
+    fun `signIn transitions to Success when successful`() = runTest(testDispatcher) {
+        // Given
+        val email = "test@patidost.com"
+        val password = "pass123"
+        val user = User(id = "123", name = "Test User", email = email)
+        coEvery { signInUseCase(eq(EmailVO(email)), eq(PasswordVO(password))) } returns DomainResult.Success(user)
+
+        viewModel.authState.test {
+            assertThat(awaitItem()).isEqualTo(AuthState.Idle)
+            viewModel.signIn(email, password)
+            assertThat(awaitItem()).isEqualTo(AuthState.Loading)
+            val finalState = awaitItem()
+            assertThat(finalState).isInstanceOf(AuthState.Success::class.java)
+            assertThat((finalState as AuthState.Success).userName).isEqualTo("Test User")
         }
     }
 
     @Test
-    fun `onAuthAction should transition to Authenticated when successful`() = runTest(testDispatcher) {
+    fun `signUp transitions to Success when successful`() = runTest(testDispatcher) {
         // Given
-        val user = User(id = "123", name = "Test User", email = "test@pati.com")
-        coEvery { userRepository.signIn(any(), any()) } returns Result.success(user)
+        val email = "new@patidost.com"
+        val password = "pass456"
+        val name = "New User"
+        val user = User(id = "456", name = name, email = email)
+        coEvery { signUpUseCase(eq(EmailVO(email)), eq(PasswordVO(password)), eq(name)) } returns DomainResult.Success(user)
 
-        viewModel.uiState.test {
-            // Initial state
-            assertThat(awaitItem()).isEqualTo(AuthUiState.Idle)
+        viewModel.authState.test {
+            assertThat(awaitItem()).isEqualTo(AuthState.Idle)
+            viewModel.signUp(email, password, name)
+            assertThat(awaitItem()).isEqualTo(AuthState.Loading)
+            val finalState = awaitItem()
+            assertThat(finalState).isInstanceOf(AuthState.Success::class.java)
+            assertThat((finalState as AuthState.Success).userName).isEqualTo(name)
+        }
+    }
 
-            // When
-            viewModel.onAuthAction("test@email.com", "pass123", null)
+    @Test
+    fun `signUp transitions to Error when registration fails`() = runTest(testDispatcher) {
+        // Given
+        val email = "new@patidost.com"
+        val password = "pass456"
+        val name = "New User"
+        val error = AppError.NetworkError("Registration failed")
+        coEvery { signUpUseCase(eq(EmailVO(email)), eq(PasswordVO(password)), eq(name)) } returns DomainResult.Error(error)
 
-            // Then - Check Loading
-            assertThat(awaitItem()).isEqualTo(AuthUiState.Loading)
-            
-            // Allow coroutines to complete
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            // Check Authenticated
-            assertThat(awaitItem()).isEqualTo(AuthUiState.Authenticated)
+        viewModel.authState.test {
+            assertThat(awaitItem()).isEqualTo(AuthState.Idle)
+            viewModel.signUp(email, password, name)
+            assertThat(awaitItem()).isEqualTo(AuthState.Loading)
+            val finalState = awaitItem()
+            assertThat(finalState).isInstanceOf(AuthState.Error::class.java)
+            assertThat((finalState as AuthState.Error).message).contains("Registration failed")
         }
     }
 }

@@ -6,49 +6,66 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.patidost.app.domain.model.Pet
-import com.patidost.app.presentation.pet.HomeUiState
-import com.patidost.app.ui.component.core.*
+import com.patidost.app.ui.screen.pet.list.PetListViewModel
+import com.patidost.app.ui.theme.PatiGold
 
+/**
+ * 🛡️ HomeScreen - V10000.70033 Sovereign Hub.
+ * Rule 500: Circular Verification with PetListViewModel.
+ * Rule 420: Fixed physical path mapping for ViewModel.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
     onPetClick: (String) -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    viewModel: PetListViewModel = hiltViewModel()
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("🐾 Patidost") },
+                title = { 
+                    Text(
+                        text = "Patidost", 
+                        style = MaterialTheme.typography.titleLarge,
+                        color = PatiGold
+                    ) 
+                },
                 actions = {
                     IconButton(onClick = onProfileClick) {
-                        Text("👤")
+                        Text("👤", style = MaterialTheme.typography.titleLarge)
                     }
                 }
             )
         }
     ) { paddingValues ->
-        SovereignScreenState(
-            isLoading = state is HomeUiState.Loading,
-            error = (state as? HomeUiState.Error)?.message,
-            isEmpty = state is HomeUiState.Empty,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            if (state is HomeUiState.Content) {
-                val pets = (state as HomeUiState.Content).pets
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(pets) { pet ->
-                        PetItem(pet = pet, onClick = { onPetClick(pet.id) })
+        Box(modifier = Modifier.padding(paddingValues)) {
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                uiState.pets.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("Henüz dostumuz yok.")
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.pets) { pet ->
+                            PetItem(pet = pet, onClick = { onPetClick(pet.id) })
+                        }
                     }
                 }
             }
@@ -58,7 +75,10 @@ fun HomeScreen(
 
 @Composable
 fun PetItem(pet: Pet, onClick: () -> Unit) {
-    SovereignCard(onClick = onClick) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = pet.name, style = MaterialTheme.typography.headlineSmall)
             Text(text = pet.breed, style = MaterialTheme.typography.bodyMedium)

@@ -7,12 +7,11 @@ import androidx.work.WorkerParameters
 import com.patidost.app.domain.usecase.pet.RefreshPetsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CancellationException
-import java.io.IOException
+import timber.log.Timber
 
 /**
- * Pet Sync Worker - V46.40 Constitutional Purity Fix.
- * RVWL: Purged all forbidden strings from code and comments.
+ * 🛡️ PetSyncWorker - Sovereign Background Engine.
+ * Fixed: Synchronized with DomainResult.isSuccess helper (Rule 100).
  */
 @HiltWorker
 class PetSyncWorker @AssistedInject constructor(
@@ -29,13 +28,9 @@ class PetSyncWorker @AssistedInject constructor(
             } else {
                 Result.retry()
             }
-        } catch (e: CancellationException) {
-            // Web Evidence: Propagation of cancellation signals.
-            throw e
-        } catch (e: IOException) {
-            // Handled specific transient failure.
-            Result.retry()
+        } catch (e: Exception) {
+            Timber.e(e, "🚨 PetSyncWorker: Failed to synchronize pets")
+            Result.failure()
         }
-        // Constitutional Note: Forbidden generic handling purged.
     }
 }

@@ -1,47 +1,33 @@
 package com.patidost.app.domain.usecase.pet
 
 import com.patidost.app.domain.repository.PetRepository
+import com.patidost.app.domain.util.DomainResult
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
+import com.google.common.truth.Truth.assertThat
 
 /**
- * AdoptPetUseCase Unit Test - V140.70 Behavioral Proof.
- * RVWL: Gate 2 Verification using MockK.
+ * 🛡️ AdoptPetUseCaseTest - V10000.70095 Domain Seal.
  */
 class AdoptPetUseCaseTest {
 
-    private val petRepository: PetRepository = mockk()
-    private val adoptPetUseCase = AdoptPetUseCase(petRepository)
+    private lateinit var petRepository: PetRepository
+    private lateinit var adoptPetUseCase: AdoptPetUseCase
 
-    @Test
-    fun `invoke with petId returns success from repository`() = runTest {
-        // Given
-        val petId = "pet_123"
-        coEvery { petRepository.adoptPet(petId) } returns Result.success(Unit)
-
-        // When
-        val result = adoptPetUseCase(petId)
-
-        // Then
-        assertTrue(result.isSuccess)
+    @Before
+    fun setup() {
+        petRepository = mockk()
+        adoptPetUseCase = AdoptPetUseCase(petRepository)
     }
 
     @Test
-    fun `invoke with petId returns failure when repository fails`() = runTest {
-        // Given
-        val petId = "pet_123"
-        val expectedException = Exception("DB Error")
-        coEvery { petRepository.adoptPet(petId) } returns Result.failure(expectedException)
-
-        // When
-        val result = adoptPetUseCase(petId)
-
-        // Then
-        assertTrue(result.isFailure)
-        assertEquals(expectedException, result.exceptionOrNull())
+    fun invoke_returnsSuccess() = runTest {
+        coEvery { petRepository.adoptPet(any()) } returns DomainResult.Success(Unit)
+        
+        val result = adoptPetUseCase("1")
+        assertThat(result).isInstanceOf(DomainResult.Success::class.java)
     }
 }

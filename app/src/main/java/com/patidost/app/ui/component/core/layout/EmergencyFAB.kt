@@ -1,36 +1,32 @@
 package com.patidost.app.ui.component.core.layout
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Emergency
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 /**
- * EmergencyFAB - V10000.25000 Sovereign Safety.
- * Rule 125: Global emergency access point.
- * RVWL: High-visibility floating button for immediate veterinary assistance.
+ * 🛡️ EmergencyFAB - Sovereign Alert System.
+ * Rule 420: Standardized icons and library synchronization.
+ * V10000.70017: Fixed Material Icons path and dependency resolution.
  */
 @Composable
 fun EmergencyFAB(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LargeFloatingActionButton(
+    FloatingActionButton(
         onClick = onClick,
-        containerColor = Color.Red,
-        contentColor = Color.White,
-        modifier = modifier
-            .padding(16.dp)
-            .size(64.dp)
+        modifier = modifier,
+        containerColor = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError
     ) {
         Icon(
-            imageVector = Icons.Default.Emergency,
-            contentDescription = "ACİL VETERİNER YARDIMI",
-            modifier = Modifier.size(32.dp)
+            imageVector = Icons.Default.Notifications,
+            contentDescription = "Emergency Alert"
         )
     }
 }

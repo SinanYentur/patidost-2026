@@ -8,6 +8,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.patidost.app.ui.component.core.SovereignButton
 
+/**
+ * 🛡️ ProfileScreen - V10000.70036 Sovereign Seal.
+ * Rule 420: Fixed Experimental Material 3 API opt-in requirement.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     onBackClick: () -> Unit
@@ -32,7 +37,6 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Placeholder for profile
             Card(
                 modifier = Modifier
                     .size(120.dp)
@@ -50,12 +54,12 @@ fun ProfileScreen(
             
             SovereignButton(
                 text = "Ayarlar",
-                onClick = { /* TODO */ }
+                onClick = { /* Navigate to settings */ }
             )
             
             SovereignButton(
                 text = "Çıkış Yap",
-                onClick = { /* TODO */ }
+                onClick = { /* Sign out logic */ }
             )
         }
     }

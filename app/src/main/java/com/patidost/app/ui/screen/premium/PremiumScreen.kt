@@ -14,6 +14,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.patidost.app.domain.repository.SubscriptionStatus
 
+/**
+ * 🛡️ PremiumScreen - V10000.70036 Sovereign Seal.
+ * Rule 420: Fixed Experimental Material 3 API opt-in requirement.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumScreen(
     viewModel: PremiumViewModel = hiltViewModel(),

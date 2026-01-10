@@ -12,13 +12,23 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.patidost.app.ui.screen.home.HomeScreen
+import com.patidost.app.ui.screen.profile.ProfileScreen
+import com.patidost.app.ui.screen.pet.discover.DiscoverScreen
+import com.patidost.app.ui.screen.cart.main.CartScreen
 import kotlinx.coroutines.launch
 
+/**
+ * 🛡️ MainScreen - Sovereign Hub V10000.70034.
+ * Rule 500: Physical Linkage with Screen physical paths.
+ * Rule 420: Fixed hiltViewModel parameter passing.
+ */
 @Composable
 fun MainScreen(
     onPetClick: (String) -> Unit,
-    onProfileClick: () -> Unit
+    onNavigateToPremium: () -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
@@ -30,10 +40,10 @@ fun MainScreen(
                 tonalElevation = 8.dp
             ) {
                 val tabs = listOf(
-                    Triple("Home", Icons.Default.Home, 0),
-                    Triple("Discover", Icons.Default.Search, 1),
-                    Triple("Cart", Icons.Default.ShoppingCart, 2),
-                    Triple("Profile", Icons.Default.Person, 3)
+                    Triple("Akış", Icons.Default.Home, 0),
+                    Triple("Keşfet", Icons.Default.Search, 1),
+                    Triple("Sepet", Icons.Default.ShoppingCart, 2),
+                    Triple("Profil", Icons.Default.Person, 3)
                 )
 
                 tabs.forEach { (label, icon, index) ->
@@ -50,19 +60,22 @@ fun MainScreen(
                 }
             }
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.padding(paddingValues),
-            userScrollEnabled = true // 🚀 SWIPE AKTİF (Organik Deneyim)
+            modifier = Modifier.padding(innerPadding),
+            userScrollEnabled = true
         ) { page ->
             when (page) {
-                0 -> HomeScreen(onPetClick = onPetClick, onProfileClick = onProfileClick)
-                1 -> Text("Discover Coming Soon") // Yer tutucu
-                2 -> Text("Cart Coming Soon") // Yer tutucu
-                3 -> Text("Profile Coming Soon") // Yer tutucu
+                0 -> HomeScreen(
+                    onPetClick = onPetClick,
+                    onProfileClick = { scope.launch { pagerState.animateScrollToPage(3) } },
+                    viewModel = hiltViewModel() // 🛡️ Kablo Bağlandı
+                )
+                1 -> DiscoverScreen(onPetClick = onPetClick)
+                2 -> CartScreen(onCheckoutClick = { /* Navigate to Discover */ })
+                3 -> ProfileScreen(onBackClick = { scope.launch { pagerState.animateScrollToPage(0) } })
             }
         }
     }
 }
-import androidx.compose.ui.unit.dp

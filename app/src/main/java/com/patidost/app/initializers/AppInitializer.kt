@@ -9,7 +9,7 @@ import timber.log.Timber
 
 /**
  * 🛡️ Rule 300: Cold-start optimization using Jetpack Startup.
- * Ensures non-blocking initialization of core services.
+ * Fixed: Firebase Performance collection property name.
  */
 class AppInitializer : Initializer<Unit> {
     override fun create(context: Context) {
@@ -19,8 +19,8 @@ class AppInitializer : Initializer<Unit> {
         
         FirebaseApp.initializeApp(context)
         
-        // 🚨 Mühür: Firebase Performance Data Collection Enabled
-        FirebasePerformance.getInstance().isDataCollectionEnabled = !BuildConfig.DEBUG
+        // 🚨 Mühür: Firebase Performance Collection Standard
+        FirebasePerformance.getInstance().isPerformanceCollectionEnabled = !BuildConfig.DEBUG
         
         val trace = FirebasePerformance.getInstance().newTrace("sovereign_startup_trace")
         trace.start()

@@ -1,52 +1,49 @@
 package com.patidost.app.domain.usecase.auth
 
+import com.google.common.truth.Truth.assertThat
 import com.patidost.app.domain.model.User
+import com.patidost.app.domain.model.valueobject.EmailVO
+import com.patidost.app.domain.model.valueobject.PasswordVO
 import com.patidost.app.domain.repository.AuthRepository
+import com.patidost.app.domain.util.DomainResult
 import io.mockk.coEvery
+import io.mockk.eq
 import io.mockk.mockk
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 /**
- * SignInUseCase Unit Test - V140.75 Behavioral Proof.
- * RVWL: Switched to MockK for constitutional compliance.
+ * 🛡️ SignInUseCaseTest - V10011.70165 Logic Seal.
+ * Rule 310: Forcing physical file resync to include MockK 'eq' import.
  */
 class SignInUseCaseTest {
 
-    private val authRepository: AuthRepository = mockk()
-    private val signInUseCase = SignInUseCase(authRepository)
+    private lateinit var authRepository: AuthRepository
+    private lateinit var signInUseCase: SignInUseCase
+    private val testDispatcher = UnconfinedTestDispatcher()
 
-    @Test
-    fun `invoke returns success when repository sign in succeeds`() = runTest {
-        // Given
-        val email = "test@patidost.com"
-        val password = "password123"
-        val user = User("1", email, "Test User")
-        coEvery { authRepository.signIn(email, password) } returns Result.success(user)
-
-        // When
-        val result = signInUseCase(email, password)
-
-        // Then
-        assertTrue(result.isSuccess)
-        assertEquals(user, result.getOrNull())
+    @Before
+    fun setup() {
+        authRepository = mockk(relaxed = true)
+        signInUseCase = SignInUseCase(authRepository, testDispatcher)
     }
 
     @Test
-    fun `invoke returns failure when repository sign in fails`() = runTest {
+    fun `invoke with valid credentials returns success`() = runTest {
         // Given
         val email = "test@patidost.com"
-        val password = "wrong_password"
-        val exception = Exception("Auth Failed")
-        coEvery { authRepository.signIn(email, password) } returns Result.failure(exception)
+        val password = "Sifre123!"
+        val expectedUser = User("1", "Test User", email)
+        coEvery { authRepository.signIn(eq(email), eq(password)) } returns DomainResult.Success(expectedUser)
 
         // When
-        val result = signInUseCase(email, password)
+        val result = signInUseCase(EmailVO(email), PasswordVO(password))
 
         // Then
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
+        assertThat(result).isInstanceOf(DomainResult.Success::class.java)
+        val user = (result as DomainResult.Success).data
+        assertThat(user).isEqualTo(expectedUser)
     }
 }

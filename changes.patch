@@ -1,0 +1,42 @@
+diff --git a/app/src/main/java/com/patidost/app/ui/screen/main/MainScreen.kt b/app/src/main/java/com/patidost/app/ui/screen/main/MainScreen.kt
+index ccde875..05b4654 100644
+--- a/app/src/main/java/com/patidost/app/ui/screen/main/MainScreen.kt
++++ b/app/src/main/java/com/patidost/app/ui/screen/main/MainScreen.kt
+@@ -12,13 +12,15 @@ import androidx.compose.material3.*
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.rememberCoroutineScope
+ import androidx.compose.ui.Modifier
++import androidx.compose.ui.unit.dp
+ import com.patidost.app.ui.screen.home.HomeScreen
++import com.patidost.app.ui.screen.profile.ProfileSettingsScreen
+ import kotlinx.coroutines.launch
+ 
+ @Composable
+ fun MainScreen(
+     onPetClick: (String) -> Unit,
+-    onProfileClick: () -> Unit
++    onNavigateToPremium: () -> Unit
+ ) {
+     val pagerState = rememberPagerState(pageCount = { 4 })
+     val scope = rememberCoroutineScope()
+@@ -54,15 +56,14 @@ fun MainScreen(
+         HorizontalPager(
+             state = pagerState,
+             modifier = Modifier.padding(paddingValues),
+-            userScrollEnabled = true // 🚀 SWIPE AKTİF (Organik Deneyim)
++            userScrollEnabled = true
+         ) { page ->
+             when (page) {
+-                0 -> HomeScreen(onPetClick = onPetClick, onProfileClick = onProfileClick)
+-                1 -> Text("Discover Coming Soon") // Yer tutucu
+-                2 -> Text("Cart Coming Soon") // Yer tutucu
+-                3 -> Text("Profile Coming Soon") // Yer tutucu
++                0 -> HomeScreen(onPetClick = onPetClick, onProfileClick = { scope.launch { pagerState.animateScrollToPage(3) } })
++                1 -> Text("Discover") // Gelecekte eklenecek
++                2 -> Text("Cart") // Gelecekte eklenecek
++                3 -> ProfileSettingsScreen(onBackClick = { scope.launch { pagerState.animateScrollToPage(0) } })
+             }
+         }
+     }
+ }
+-import androidx.compose.ui.unit.dp

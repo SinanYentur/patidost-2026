@@ -6,55 +6,79 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.patidost.app.ui.screen.auth.login.LoginScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.patidost.app.ui.screen.auth.AuthScreen
+import com.patidost.app.ui.screen.auth.AuthViewModel
 import com.patidost.app.ui.screen.main.MainScreen
 import com.patidost.app.ui.screen.profile.ProfileSettingsScreen
+import com.patidost.app.ui.screen.profile.ProfileViewModel
+import com.patidost.app.ui.screen.premium.PremiumScreen
+import com.patidost.app.ui.screen.premium.PremiumViewModel
+import com.patidost.app.ui.screen.pet.PetDetailScreen
+import com.patidost.app.ui.screen.pet.PetDetailViewModel
 
+/**
+ * 🛡️ NavGraph - Sovereign Navigation Hub V10000.70111.
+ * Rule 310: Physical sync with pet package (removed .detail sub-package).
+ * ARTICLE 15: Navigation DNA aligned with V10000.70062 Screen location.
+ */
 @Composable
 fun NavGraph() {
     val navController = rememberNavController()
     
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = "auth"
     ) {
-        // 🔐 Auth: Giriş Kapısı
-        composable("login") {
-            LoginScreen(
+        // 🔐 Auth Gate
+        composable("auth") {
+            AuthScreen(
+                viewModel = hiltViewModel<AuthViewModel>(),
                 onAuthSuccess = { 
                     navController.navigate("main") {
-                        popUpTo("login") { inclusive = true }
+                        popUpTo("auth") { inclusive = true }
                     }
                 }
             )
         }
 
-        // 🐾 Main: Organik İskelet (Home + Swipeable Tabs)
+        // 🐾 Main Core
         composable("main") {
             MainScreen(
                 onPetClick = { petId -> 
                     navController.navigate("pet_detail/$petId") 
                 },
-                onProfileClick = { 
-                    navController.navigate("profile") 
+                onNavigateToPremium = { 
+                    navController.navigate("premium") 
                 }
             )
         }
 
-        // 👤 Profile: Ayarlar
+        // 👤 Profile Hub
         composable("profile") {
             ProfileSettingsScreen(
+                viewModel = hiltViewModel<ProfileViewModel>(),
                 onBackClick = { navController.popBackStack() }
             )
         }
 
-        // 📄 Pet Detail: Detaylar
+        // 💎 Premium Gate
+        composable("premium") {
+            PremiumScreen(
+                viewModel = hiltViewModel<PremiumViewModel>(),
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        // 📄 Pet Detail: Physical Stream (V10000.70111 Reseal)
         composable(
             route = "pet_detail/{petId}",
             arguments = listOf(navArgument("petId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val petId = backStackEntry.arguments?.getString("petId") ?: ""
-            // PetDetailScreen fiziksel mühürleme aşamasında eklenecek
+        ) {
+            PetDetailScreen(
+                viewModel = hiltViewModel<PetDetailViewModel>(),
+                onBackClick = { navController.popBackStack() }
+            )
         }
     }
 }

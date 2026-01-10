@@ -1,92 +1,83 @@
 package com.patidost.app.data.repository
 
-import android.content.Context
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.CredentialManager
-import com.google.firebase.auth.FirebaseAuth
+import com.patidost.app.data.models.AuthRequest
+import com.patidost.app.data.models.OnboardingRequest
+import com.patidost.app.data.remote.PatidostApi
 import com.patidost.app.di.IoDispatcher
 import com.patidost.app.domain.model.User
 import com.patidost.app.domain.repository.AuthRepository
-import com.patidost.app.util.SecurityGuard
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.patidost.app.domain.repository.SessionCache
+import com.patidost.app.domain.util.DomainResult
+import com.patidost.app.domain.util.toAppError
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import timber.log.Timber
 
-/**
- * Auth Repository Implementation - V10000.70000 Final Seal.
- * Rule 100: Grounded in Firebase 34.7.0 and Google Services Json verification.
- */
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    @ApplicationContext private val context: Context,
+    private val patidostApi: PatidostApi,
+    private val sessionCache: SessionCache, // ÇELİK KASA enjekte edildi
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : AuthRepository {
 
-    private val credentialManager = CredentialManager.create(context)
-
-    override fun getCurrentUser(): Flow<User?> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            val user = auth.currentUser?.let { 
-                User(id = it.uid, email = it.email ?: "", name = it.displayName ?: "Patidost")
-            }
-            trySend(user)
-        }
-        firebaseAuth.addAuthStateListener(listener)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }.flowOn(ioDispatcher)
-
-    override suspend fun signIn(email: String, password: String): Result<User> = withContext(ioDispatcher) {
-        runCatching {
-            Timber.tag("SovereignAuth").d("Attempting Sign In: $email")
-            // 🛡️ Mühür: Firebase 2026 Auth Pattern
-            val result = firebaseAuth.signInWithEmailAndPassword(email.trim(), password.trim()).await()
-            val firebaseUser = result.user ?: throw Exception("Giriş başarısız: Kullanıcı bulunamadı.")
-            User(id = firebaseUser.uid, email = firebaseUser.email ?: "", name = firebaseUser.displayName ?: "")
-        }.onFailure { e ->
-            Timber.tag("SovereignAuth").e(e, "Sign In Failed: ${e.message}")
+    override fun getCurrentUser(): Flow<User?> = sessionCache.getAuthToken().map {
+        if (it != null) {
+            // TODO: Decode JWT to get user details for a real implementation
+            User(id = "from_token", email = "from_token", name = "Patidost")
+        } else {
+            null
         }
     }
 
-    override suspend fun signUp(email: String, password: String, name: String): Result<User> = withContext(ioDispatcher) {
-        runCatching {
-            Timber.tag("SovereignAuth").d("Attempting Sign Up: $email")
-            val result = firebaseAuth.createUserWithEmailAndPassword(email.trim(), password.trim()).await()
-            val firebaseUser = result.user ?: throw Exception("Kayıt başarısız.")
-            User(id = firebaseUser.uid, email = firebaseUser.email ?: "", name = name)
-        }.onFailure { e ->
-            Timber.tag("SovereignAuth").e(e, "Sign Up Failed: ${e.message}")
+    override suspend fun signIn(email: String, password: String): DomainResult<User> = withContext(ioDispatcher) {
+        try {
+            val authRequest = AuthRequest(username = email, password = password)
+            val response = patidostApi.signIn(authRequest)
+            sessionCache.saveAuthToken(response.token) // ÇELİK KASA'ya yaz
+            DomainResult.Success(User(id = "", email = email, name = "User"))
+        } catch (e: Exception) {
+            sessionCache.clearAuthToken() // Hata durumunda kasayı temizle
+            DomainResult.Error(e.toAppError())
         }
     }
 
-    override suspend fun signInWithGoogle(): Result<User> = Result.failure(Exception("Google Sign-In requires Credential Manager"))
-    override suspend fun signInWithFacebook(): Result<User> = Result.failure(Exception("Facebook SDK not integrated"))
-    override suspend fun signInWithInstagram(): Result<User> = Result.failure(Exception("Instagram not supported"))
-
-    override suspend fun signOut(): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firebaseAuth.signOut()
-            credentialManager.clearCredentialState(ClearCredentialStateRequest())
-            Unit
+    override suspend fun signUp(email: String, password: String, name: String): DomainResult<User> = withContext(ioDispatcher) {
+        try {
+            val authRequest = AuthRequest(username = email, password = password, name = name)
+            patidostApi.signUp(authRequest)
+            return@withContext signIn(email, password)
+        } catch (e: Exception) {
+            DomainResult.Error(e.toAppError())
         }
     }
 
-    override suspend fun deleteAccount(): Result<Unit> = withContext(ioDispatcher) {
-        runCatching {
-            firebaseAuth.currentUser?.delete()?.await()
-            Unit
+    override suspend fun onboardUser(name: String, birthDate: String, hasPet: Boolean): DomainResult<Unit> = withContext(ioDispatcher) {
+        try {
+            val token = sessionCache.getAuthToken().first() // ÇELİK KASA'dan oku
+                ?: return@withContext DomainResult.Error(com.patidost.app.domain.util.AppError.NotAuthorized())
+            val request = OnboardingRequest(name = name, birthDate = birthDate, hasPet = hasPet)
+            patidostApi.onboardUser(token, request)
+            DomainResult.Success(Unit)
+        } catch (e: Exception) {
+            DomainResult.Error(e.toAppError())
         }
     }
 
-    override suspend fun getIntegrityToken(nonce: String): Result<String> {
-        return Result.success("BYPASSED_FOR_DEBUG")
+    override suspend fun signOut(): DomainResult<Unit> = withContext(ioDispatcher) {
+        sessionCache.clearAuthToken() // ÇELİK KASA'yı temizle
+        DomainResult.Success(Unit)
     }
+
+    override suspend fun deleteAccount(): DomainResult<Unit> = withContext(ioDispatcher) {
+        DomainResult.Error(com.patidost.app.domain.util.AppError.UnknownError("Not implemented"))
+    }
+
+    override suspend fun signInWithGoogle(): DomainResult<User> = DomainResult.Error(com.patidost.app.domain.util.AppError.UnknownError("Not implemented"))
+    override suspend fun signInWithFacebook(): DomainResult<User> = DomainResult.Error(com.patidost.app.domain.util.AppError.UnknownError("Not implemented"))
+    override suspend fun signInWithInstagram(): DomainResult<User> = DomainResult.Error(com.patidost.app.domain.util.AppError.UnknownError("Not implemented"))
+    override suspend fun getIntegrityToken(nonce: String): DomainResult<String> = DomainResult.Error(com.patidost.app.domain.util.AppError.UnknownError("Not implemented"))
 }

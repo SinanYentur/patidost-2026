@@ -13,10 +13,12 @@ import com.patidost.app.domain.model.User
 import com.patidost.app.ui.component.GlassCard
 import com.patidost.app.ui.component.PremiumPatiButton
 import com.patidost.app.ui.theme.*
+import com.patidost.app.util.calculateSnowyGradient
 
 /**
- * Profile Settings Components - V10001.00000 Snowy A+++ Edition.
- * REPLICA: Synchronized with the premium snowy/light glass UI.
+ * 🛡️ ProfileSettingsComponents - V10000.70042 Sovereign Cleanse.
+ * Rule 310: Physical synchronization with ViewUtils.kt.
+ * Fixed: Removed accidental text injection from source code.
  */
 @Composable
 fun ProfileSettingsContent(
