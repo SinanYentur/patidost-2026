@@ -40,6 +40,8 @@ android {
         }
     }
     compileOptions {
+        // ANAYASAL ONARIM: Core Library Desugaring aktive edildi.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -56,13 +58,16 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "**/values.xml" 
+            excludes += "**/values.xml"
             excludes += "META-INF/*.kotlin_module"
         }
     }
 }
 
 dependencies {
+
+    // ANAYASAL ONARIM: Core Library Desugaring bağımlılığı eklendi.
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
 
     // Core & UI
     implementation(libs.androidx.core.ktx)
@@ -92,12 +97,12 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
-    implementation("com.google.firebase:firebase-functions-ktx") // Anayasal Kriz Çözümü V.3
+    implementation("com.google.firebase:firebase-functions-ktx")
     implementation("com.google.android.gms:play-services-auth:21.5.0")
 
     // Image Loading
     implementation(libs.coil.compose)
-    
+
     // Logging
     implementation(libs.timber)
 
