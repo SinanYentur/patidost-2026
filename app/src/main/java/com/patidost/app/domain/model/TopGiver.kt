@@ -2,7 +2,6 @@ package com.patidost.app.domain.model
 
 /**
  * Represents a user in the 'Top Givers' leaderboard.
- * This is a pure data class for the domain layer.
  */
 data class TopGiver(
     val userId: String,

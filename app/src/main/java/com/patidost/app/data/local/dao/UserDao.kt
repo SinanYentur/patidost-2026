@@ -12,18 +12,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserDao {
 
-    /**
-     * Inserts or updates a user. If the user already exists, it's replaced.
-     * @param user The user to be inserted or updated.
-     */
     @Upsert
     suspend fun upsertUser(user: UserEntity)
 
-    /**
-     * Retrieves a user by their unique ID.
-     * @param uid The unique ID of the user.
-     * @return A flow of the user, which will emit a new value if the user data changes.
-     */
     @Query("SELECT * FROM users WHERE uid = :uid LIMIT 1")
     fun getUser(uid: String): Flow<UserEntity?>
+
+    @Query("SELECT * FROM users WHERE uid = :uid LIMIT 1")
+    suspend fun getUserById(uid: String): UserEntity?
+
+    @Query("UPDATE users SET patiPoints = patiPoints + :amount WHERE uid = :uid")
+    suspend fun updatePatiPoints(uid: String, amount: Int)
 }

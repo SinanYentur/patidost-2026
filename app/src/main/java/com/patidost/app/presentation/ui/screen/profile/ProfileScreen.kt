@@ -1,132 +1,61 @@
 package com.patidost.app.presentation.ui.screen.profile
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import kotlinx.coroutines.flow.collectLatest
+import com.patidost.app.presentation.ui.util.UiText
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
-    onNavigateToLogin: () -> Unit
-) {
+fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(key1 = true) {
-        viewModel.navigationEvent.collectLatest {
-            when (it) {
-                is ProfileViewModel.NavigationEvent.NavigateToLogin -> onNavigateToLogin()
-            }
-        }
-    }
-
-    Scaffold {
-        Column(
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(uiState.user?.name ?: "Profil") }) }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
         ) {
-            when (val state = uiState) {
-                is ProfileUiState.Loading -> {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            if (uiState.isLoading) {
+                CircularProgressIndicator()
+            }
+
+            uiState.error?.let {
+                Text(text = it.asString())
+            }
+
+            Column {
+                uiState.user?.let { user ->
+                    Text(text = "Kullanıcı: ${user.name}")
+                    Text(text = "E-posta: ${user.email}")
                 }
-                is ProfileUiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = state.message.asString(LocalContext.current),
-                            color = MaterialTheme.colorScheme.error,
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                Spacer(modifier = Modifier.height(16.dp))
+                uiState.wallet?.let {
+                    Text(text = "Pati Puanı: ${it.patiBalance}")
                 }
-                is ProfileUiState.Success -> {
-                    ProfileSuccessContent(
-                        state = state,
-                        onSignOutClicked = viewModel::onSignOutClicked
-                    )
+                Spacer(modifier = Modifier.height(8.dp))
+                uiState.subscription?.let {
+                    Text(text = "Üyelik: ${it.type} (${it.status})")
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun ProfileSuccessContent(
-    state: ProfileUiState.Success,
-    onSignOutClicked: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp, start = 16.dp, end = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AsyncImage(
-            model = state.userAvatarUrl,
-            contentDescription = "Profil Fotoğrafı",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = state.userName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = state.userEmail, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-        Spacer(modifier = Modifier.height(32.dp))
-        Divider()
-
-        // Menu Items
-        ListItem(
-            headlineContent = { Text("Favorilerim") },
-            leadingContent = {
-                Icon(
-                    Icons.Default.Favorite,
-                    contentDescription = "Favorilerim"
-                )
-            }
-        )
-        ListItem(
-            headlineContent = { Text("İlanlarım") },
-            leadingContent = {
-                Icon(
-                    Icons.AutoMirrored.Filled.ListAlt,
-                    contentDescription = "İlanlarım"
-                )
-            }
-        )
-
-        Divider()
-        ListItem(
-            headlineContent = { Text("Çıkış Yap", color = MaterialTheme.colorScheme.error) },
-            leadingContent = {
-                Icon(
-                    Icons.AutoMirrored.Filled.ExitToApp,
-                    contentDescription = "Çıkış Yap",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            },
-            modifier = Modifier.clickable(onClick = onSignOutClicked)
-        )
     }
 }

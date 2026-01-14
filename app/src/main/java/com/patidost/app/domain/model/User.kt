@@ -1,12 +1,15 @@
 package com.patidost.app.domain.model
 
 /**
- * 🛡️ GÖREV 0: ANATOMİK BÜTÜNLÜK - İLK HÜCRE
- * Sistemin temel kullanıcı varlığını temsil eder.
- * Bu, tüm kimlik doğrulama ve kullanıcı işlemleri evreninin merkezindeki atomdur.
+ * Represents the core User entity in the domain layer.
+ * This class holds all the necessary information about a user.
  */
 data class User(
-    val id: String,
+    val uid: String,
     val name: String,
-    val email: String
+    val email: String,
+    val avatarUrl: String,
+    val patiPoints: Int,
+    val status: String, // e.g., "active", "suspended"
+    val verificationLevel: Int // e.g., 1 for email, 2 for phone
 )

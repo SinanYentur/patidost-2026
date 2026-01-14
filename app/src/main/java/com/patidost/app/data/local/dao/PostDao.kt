@@ -12,24 +12,19 @@ import com.patidost.app.data.local.entity.PostEntity
 @Dao
 interface PostDao {
 
-    /**
-     * Inserts or updates a list of posts.
-     * This is the primary method for populating the cache from the network.
-     */
     @Upsert
     suspend fun upsertAll(posts: List<PostEntity>)
 
-    /**
-     * Returns a PagingSource that loads posts from the database.
-     * This is the single source of truth for the UI.
-     */
     @Query("SELECT * FROM posts ORDER BY timestamp DESC")
     fun pagingSource(): PagingSource<Int, PostEntity>
 
-    /**
-     * Deletes all posts from the table.
-     * Used to clear the cache before a full refresh.
-     */
     @Query("DELETE FROM posts")
     suspend fun clearAll()
+
+    /**
+     * Atomically updates the like status and count of a post.
+     * This is the core of the optimistic update mechanism in the local database.
+     */
+    @Query("UPDATE posts SET isLiked = :isLiked, likeCount = likeCount + :likeCountChange WHERE postId = :postId")
+    suspend fun updateLikeStatus(postId: String, isLiked: Boolean, likeCountChange: Int)
 }

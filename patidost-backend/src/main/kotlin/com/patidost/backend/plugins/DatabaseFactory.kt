@@ -3,7 +3,9 @@ package com.patidost.backend.plugins
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.server.application.*
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 /**
  * 🛡️ GÖREV-013 & 015: Veritabanı DNA'sını başlatan çekirdek.
@@ -32,3 +34,10 @@ fun Application.configureDatabase() {
 
     log.info("Database connection initialized.")
 }
+
+/**
+ * Asenkron ve merkezi veritabanı sorgu fonksiyonu.
+ * Tüm repository katmanı bu fonksiyonu kullanarak IO thread üzerinde çalışır.
+ */
+suspend fun <T> dbQuery(block: suspend () -> T): T =
+    newSuspendedTransaction(Dispatchers.IO) { block() }

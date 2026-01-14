@@ -12,5 +12,6 @@ data class AddPetUiState(
     val imageUrl: String = "",
     val isFormValid: Boolean = false,
     val isLoading: Boolean = false,
+    val isPetAdded: Boolean = false, // Flag to indicate successful pet addition
     val error: UiText? = null
 )

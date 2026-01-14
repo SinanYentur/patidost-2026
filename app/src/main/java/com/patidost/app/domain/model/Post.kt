@@ -11,6 +11,7 @@ data class Post(
     val imageUrl: String?,
     val timestamp: Long,
     val likeCount: Int,
+    val isLiked: Boolean,
     val relatedPetId: String?
 )
 

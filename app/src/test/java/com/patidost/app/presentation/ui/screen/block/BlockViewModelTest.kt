@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.User
 import com.patidost.app.domain.repository.BlockRepository
+import com.patidost.app.presentation.ui.util.UiText
 import com.patidost.app.util.MainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -44,7 +45,7 @@ class BlockViewModelTest {
     @Test
     fun `loadBlockedUsers on init with error, state is updated to error`() {
         // Arrange
-        val errorMessage = "Could not load blocked users"
+        val errorMessage = UiText.DynamicString("Could not load blocked users")
         coEvery { blockRepository.getBlockedUsers() } returns flowOf(Resource.Error(errorMessage))
 
         // Act

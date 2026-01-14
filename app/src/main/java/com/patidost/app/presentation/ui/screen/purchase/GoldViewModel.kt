@@ -1,5 +1,6 @@
 package com.patidost.app.presentation.ui.screen.purchase
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patidost.app.core.util.Resource
@@ -29,21 +30,18 @@ class GoldViewModel @Inject constructor(
                 _uiState.update { it.copy(selectedPlan = event.plan, purchaseError = null) }
             }
             is GoldPurchaseEvent.Purchase -> {
-                purchase()
+                purchase(event.activity)
             }
         }
     }
 
-    private fun purchase() {
+    private fun purchase(activity: Activity) {
         val planToPurchase = _uiState.value.selectedPlan ?: return
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, purchaseError = null) }
 
-            // In a real app, this token would come from the Google Play Billing library
-            val fakeStoreToken = "fake_store_token_for_${planToPurchase.productId}"
-
-            val result = purchaseGoldUseCase(planToPurchase.productId, fakeStoreToken)
+            val result = purchaseGoldUseCase(activity, planToPurchase.productId)
 
             when (result) {
                 is Resource.Success -> {
@@ -64,6 +62,6 @@ class GoldViewModel @Inject constructor(
             SubscriptionPlanUiModel("gold_semi_annual", "6 Ay", "6 Aylık Gold Üyelik", "$49.99"),
             SubscriptionPlanUiModel("gold_annual", "12 Ay", "Yıllık Gold Üyelik", "$89.99")
         )
-        _uiState.update { it.copy(plans = samplePlans) }
+        _uiState.update { it.copy(plans = samplePlans, selectedPlan = samplePlans.first()) }
     }
 }

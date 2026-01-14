@@ -1,11 +1,13 @@
 package com.patidost.app.data.repository
 
+import android.app.Activity
 import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.economy.Subscription
 import com.patidost.app.domain.model.economy.SubscriptionStatus
 import com.patidost.app.domain.model.economy.SubscriptionType
 import com.patidost.app.domain.model.economy.Wallet
 import com.patidost.app.domain.repository.EconomyRepository
+import com.patidost.app.presentation.ui.util.UiText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.Instant
@@ -24,5 +26,15 @@ class FakeEconomyRepository @Inject constructor() : EconomyRepository {
             validUntil = Instant.now().plusSeconds(31536000),
             startedAt = Instant.now()
         )))
+    }
+
+    override suspend fun purchaseSubscription(activity: Activity, productId: String): Resource<Unit> {
+        println("Fake purchase attempt for $productId")
+        return Resource.Success(Unit)
+    }
+
+    override suspend fun givePati(targetPetId: String, amount: Int): Resource<Unit> {
+        println("Fake pati given to $targetPetId")
+        return Resource.Success(Unit)
     }
 }

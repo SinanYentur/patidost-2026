@@ -15,7 +15,8 @@ data class PostEntity(
     val text: String,
     val imageUrl: String?,
     val timestamp: Long,
-    val likeCount: Int,
+    var likeCount: Int,      // Changed to var for optimistic updates
+    var isLiked: Boolean = false, // To track the user's like status
     val relatedPetId: String?,
 
     @Embedded(prefix = "author_")

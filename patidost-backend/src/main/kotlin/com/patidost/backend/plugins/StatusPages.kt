@@ -9,7 +9,7 @@ import java.sql.SQLException
 
 /**
  * 🛡️ GÖREV-029: Hata Yönetim Zırhı
- * V2: Adapted for H2 database by catching generic SQLException, removing PostgreSQL-specific code.
+ * V4: Anatomik Onarım - 'application.log' referansı 'call.application.log' olarak düzeltildi.
  */
 fun Application.configureStatusPages() {
     install(StatusPages) {
@@ -22,14 +22,18 @@ fun Application.configureStatusPages() {
             if (cause.sqlState == "23505") {
                 call.respond(HttpStatusCode.Conflict, "A user with this username already exists.")
             } else {
-                // For other database errors, respond with a generic server error
-                call.respond(HttpStatusCode.InternalServerError, "Database error occurred.")
+                // For other database errors, log the details and respond with a generic server error.
+                call.application.log.error("Unhandled SQL exception caught in StatusPages", cause)
+                call.respond(HttpStatusCode.InternalServerError, "A database error occurred.")
             }
         }
 
-        // Generic exception handler
+        // Generic exception handler - Hardened for security
         exception<Throwable> { call, cause ->
-            call.respond(HttpStatusCode.InternalServerError, "An unexpected error occurred: ${cause.localizedMessage}")
+            // Log the full error for server-side debugging.
+            call.application.log.error("Unhandled generic exception caught in StatusPages", cause)
+            // NEVER send exception details to the client in production.
+            call.respond(HttpStatusCode.InternalServerError, "An unexpected internal server error occurred.")
         }
     }
 }

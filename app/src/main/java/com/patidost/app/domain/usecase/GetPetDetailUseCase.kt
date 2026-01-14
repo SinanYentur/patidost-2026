@@ -3,6 +3,7 @@ package com.patidost.app.domain.usecase
 import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.Pet
 import com.patidost.app.domain.repository.PetRepository
+import com.patidost.app.presentation.ui.util.UiText
 import javax.inject.Inject
 
 /**
@@ -15,6 +16,6 @@ class GetPetDetailUseCase @Inject constructor(
     // The actual implementation will be added later.
     // For now, it returns an error to satisfy the build.
     suspend operator fun invoke(petId: String): Resource<Pet> {
-        return Resource.Error("Not yet implemented")
+        return Resource.Error(UiText.DynamicString("Not yet implemented"))
     }
 }

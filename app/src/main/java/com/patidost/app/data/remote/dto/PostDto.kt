@@ -1,20 +1,17 @@
+
 package com.patidost.app.data.remote.dto
 
-import kotlinx.serialization.Serializable
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
 
-/**
- * Represents a post data structure from the network (Data Transfer Object).
- * Designed to be flexible for various post types.
- */
-@Serializable
 data class PostDto(
-    val postId: String,
-    val authorId: String,
-    val authorName: String,
-    val authorAvatarUrl: String?,
-    val text: String,
-    val imageUrl: String? = null, // For image posts
-    val timestamp: Long,
-    val likeCount: Int,
-    val relatedPetId: String? = null // For special posts like "Welcome Pet"
+    val id: String = "",
+    val ownerId: String = "",
+    val petId: String = "",
+    val text: String = "",
+    val mediaUrl: String? = null,
+    val likeCount: Int = 0,
+    val commentCount: Int = 0,
+    @ServerTimestamp
+    val createdAt: Date? = null
 )

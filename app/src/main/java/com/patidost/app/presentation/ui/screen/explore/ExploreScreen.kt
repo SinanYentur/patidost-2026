@@ -1,141 +1,136 @@
 package com.patidost.app.presentation.ui.screen.explore
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.patidost.app.domain.repository.PetFilter
-import com.patidost.app.presentation.ui.screen.home.FeaturedPet
+import com.patidost.app.R
+import com.patidost.app.presentation.navigation.Screen
+import com.patidost.app.presentation.ui.component.BottomNavBar
+import com.patidost.app.presentation.ui.component.BottomNavItem
+import com.patidost.app.presentation.ui.screen.explore.composables.InfoText
+import com.patidost.app.presentation.ui.screen.explore.composables.TopGiversBar
+import com.patidost.app.presentation.ui.screen.explore.composables.swipe.PetSwipeCard
+import com.patidost.app.presentation.ui.util.UiText
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
-    onNavigateToPetDetail: (String) -> Unit
+    onNavigate: (String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val currentFilter by viewModel.filter.collectAsState()
+    val haptics = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
 
-    Scaffold {
+    val bottomNavItems = listOf(
+        BottomNavItem("Home", Icons.Default.Home, Screen.Home.route),
+        BottomNavItem("Messages", Icons.Default.Mail, Screen.Conversations.route),
+        BottomNavItem("Explore", Icons.Default.Explore, Screen.Explore.route),
+        BottomNavItem("Friends", Icons.Default.Person, Screen.Friends.route)
+    )
+
+    Scaffold(
+        bottomBar = {
+            BottomNavBar(items = bottomNavItems, currentRoute = Screen.Explore.route, onItemClick = onNavigate)
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(padding)
         ) {
-            // Search Bar
-            SearchBar(
-                query = searchQuery,
-                onQueryChanged = viewModel::onQueryChanged
-            )
+            if (uiState.topGivers.isNotEmpty()) {
+                TopGiversBar(topGivers = uiState.topGivers)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Filter Chips
-            FilterChips(
-                currentFilter = currentFilter,
-                onFilterChanged = viewModel::onFilterChanged
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (uiState.isLoading) {
+                    CircularProgressIndicator()
+                } else if (uiState.error != null) {
+                    InfoText(text = uiState.error!!.asString())
+                } else if (uiState.pets.isEmpty()) {
+                    InfoText(stringResource(id = R.string.explore_no_pets_found))
+                } else {
+                    val pets = uiState.pets
+                    val offsetX = remember { Animatable(0f) }
 
-            // Content
-            Box(modifier = Modifier.fillMaxSize()) {
-                when (val state = uiState) {
-                    is ExploreUiState.Idle -> {
-                        InfoText("Aramaya başlayın veya filtreleri kullanın.")
+                    LaunchedEffect(uiState.pets.size) {
+                        offsetX.snapTo(0f)
                     }
-                    is ExploreUiState.Loading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                    is ExploreUiState.Error -> {
-                        InfoText(state.message.asString())
-                    }
-                    is ExploreUiState.Success -> {
-                        if (state.isEmpty) {
-                            InfoText("Aramanızla eşleşen bir dost bulunamadı.")
-                        } else {
-                            PetList(pets = state.pets, onPetClicked = onNavigateToPetDetail)
-                        }
+                    pets.reversed().forEachIndexed { index, pet ->
+                        val isTopCard = index == pets.lastIndex
+
+                        PetSwipeCard(
+                            modifier = Modifier
+                                .graphicsLayer(
+                                    translationX = if (isTopCard) offsetX.value else 0f,
+                                    rotationZ = if (isTopCard) offsetX.value / 40f else 0f,
+                                    scaleX = 1f - (pets.size - 1 - index) * 0.1f,
+                                    scaleY = 1f - (pets.size - 1 - index) * 0.1f
+                                )
+                                .pointerInput(pet.id) {
+                                    if (!isTopCard) return@pointerInput
+                                    detectDragGestures(
+                                        onDragEnd = {
+                                            val target = if (offsetX.value > 300) 1000f else if (offsetX.value < -300) -1000f else 0f
+                                            scope.launch {
+                                                offsetX.animateTo(target, tween(durationMillis = 300))
+                                                if (target != 0f) {
+                                                    if (target > 0) viewModel.onEvent(ExploreEvent.SwipeRight) else viewModel.onEvent(ExploreEvent.SwipeLeft)
+                                                }
+                                            }
+                                        },
+                                        onDrag = { change, dragAmount ->
+                                            change.consume()
+                                            scope.launch { offsetX.snapTo(offsetX.value + dragAmount.x) }
+                                        }
+                                    )
+                                },
+                            pet = pet,
+                            distance = "?",
+                            onGivePati = { scope.launch { viewModel.onEvent(ExploreEvent.SwipeRight) } },
+                            onDislike = { scope.launch { viewModel.onEvent(ExploreEvent.SwipeLeft) } },
+                            onLike = { scope.launch { viewModel.onEvent(ExploreEvent.SwipeRight) } },
+                            onOwnerClick = { onNavigate(Screen.Profile.createRoute(pet.owner.ownerId)) }
+                        )
                     }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun SearchBar(query: String, onQueryChanged: (String) -> Unit) {
-    TextField(
-        value = query,
-        onValueChange = onQueryChanged,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        placeholder = { Text("İsim veya cins ara...") },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Arama") },
-        trailingIcon = {
-            if (query.isNotEmpty()) {
-                IconButton(onClick = { onQueryChanged("") }) {
-                    Icon(Icons.Default.Clear, contentDescription = "Temizle")
-                }
-            }
-        },
-        singleLine = true
-    )
-}
-
-@Composable
-private fun FilterChips(currentFilter: PetFilter, onFilterChanged: (PetFilter) -> Unit) {
-    val categories = listOf("Köpek", "Kedi") // Example categories
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(categories) {
-            val isSelected = currentFilter.category == it
-            FilterChip(
-                selected = isSelected,
-                onClick = {
-                    val newFilter = if (isSelected) currentFilter.copy(category = null) else currentFilter.copy(category = it)
-                    onFilterChanged(newFilter)
-                },
-                label = { Text(it) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun PetList(pets: List<FeaturedPet>, onPetClicked: (String) -> Unit) {
-    LazyColumn(contentPadding = PaddingValues(16.dp)) {
-        items(pets, key = { it.patiId }) {
-            ListItem(
-                headlineContent = { Text(it.name) },
-                supportingContent = { Text(it.breed) },
-                modifier = Modifier.clickable { onPetClicked(it.patiId) }
-            )
-            Divider()
-        }
-    }
-}
-
-@Composable
-private fun BoxScope.InfoText(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyLarge,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.align(Alignment.Center).padding(16.dp)
-    )
 }

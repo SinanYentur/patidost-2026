@@ -1,20 +1,21 @@
 package com.patidost.app.domain.repository
 
-import com.patidost.app.presentation.ui.screen.home.FeaturedPet
-import com.patidost.app.presentation.ui.screen.home.TopGiver
+import com.patidost.app.core.util.Resource
+import com.patidost.app.domain.model.Pet
+import com.patidost.app.domain.model.TopGiver
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Interface for the repository that handles home screen data.
+ * The constitutional contract for the Home screen's primary data operations.
  */
 interface HomeRepository {
+    /**
+     * Fetches a list of featured pets for the home screen.
+     */
+    fun getFeaturedPets(): Flow<Resource<List<Pet>>>
 
     /**
-     * Fetches the list of top givers.
+     * Fetches the list of top givers for the weekly leaderboard.
      */
-    suspend fun getTopGivers(): Result<List<TopGiver>>
-
-    /**
-     * Fetches the featured pet.
-     */
-    suspend fun getFeaturedPet(): Result<FeaturedPet?>
+    fun getTopGivers(): Flow<Resource<List<TopGiver>>>
 }

@@ -1,22 +1,35 @@
 package com.patidost.app.data.remote.dto
 
-import com.google.firebase.firestore.PropertyName
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 /**
- * Data Transfer Object for Pet.
- * Matches the Firestore document structure exactly.
+ * Represents a Pet data structure from Firestore (Data Transfer Object).
+ * This matches the schema for documents in the /pets collection.
  */
 data class PetDto(
-    @get:PropertyName("id") @set:PropertyName("id") var id: String = "",
-    @get:PropertyName("ownerId") @set:PropertyName("ownerId") var ownerId: String = "",
-    @get:PropertyName("name") @set:PropertyName("name") var name: String = "",
-    @get:PropertyName("age") @set:PropertyName("age") var age: Int = 0,
-    @get:PropertyName("breed") @set:PropertyName("breed") var breed: String = "",
-    @get:PropertyName("gender") @set:PropertyName("gender") var gender: String = "",
-    @get:PropertyName("description") @set:PropertyName("description") var description: String = "",
-    @get:PropertyName("isVisibleInSwipe") @set:PropertyName("isVisibleInSwipe") var isVisibleInSwipe: Boolean = true,
-    @get:PropertyName("state") @set:PropertyName("state") var state: String = "active",
-    @get:PropertyName("createdAt") @set:PropertyName("createdAt") @ServerTimestamp var createdAt: Date? = null
+    val ownerId: String = "",
+    val name: String = "",
+    val species: String = "",
+    val breed: String = "",
+    val gender: String = "",
+    val birthDate: Date? = null,
+    val photoUrl: String? = null,
+    val location: LocationDto? = null,
+    val totalPati: Int = 0,
+    val isUpForAdoption: Boolean = false,
+    @ServerTimestamp
+    val createdAt: Date? = null
+) {
+    // Firestore document ID, to be populated manually after fetching.
+    lateinit var id: String
+}
+
+/**
+ * Represents the location object nested within a PetDto.
+ */
+data class LocationDto(
+    val lat: Double = 0.0,
+    val lng: Double = 0.0,
+    val city: String = ""
 )

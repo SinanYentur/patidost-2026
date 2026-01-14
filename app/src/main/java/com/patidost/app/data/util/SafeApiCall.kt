@@ -5,30 +5,28 @@ import com.patidost.app.presentation.ui.util.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.io.IOException
 
-/**
- * A sealed interface to represent the result of a network call.
- */
-sealed interface NetworkResult<T> {
-    data class Success<T>(val data: T) : NetworkResult<T>
-    data class Error<T>(val code: Int, val message: String?) : NetworkResult<T>
-    data class Exception<T>(val e: Throwable) : NetworkResult<T>
-}
-
-/**
- * A utility function to make a safe API call and handle exceptions.
- */
-suspend fun <T> safeApiCall(apiCall: suspend () -> T): NetworkResult<T> {
+suspend fun <T> safeApiCall(apiCall: suspend () -> T): Resource<T> {
     return withContext(Dispatchers.IO) {
         try {
-            NetworkResult.Success(apiCall.invoke())
+            Resource.Success(apiCall.invoke())
         } catch (throwable: Throwable) {
             when (throwable) {
+                is IOException -> Resource.Error(UiText.DynamicString("Network error. Please check your connection."))
                 is HttpException -> {
-                    NetworkResult.Error(throwable.code(), throwable.response()?.errorBody()?.string())
+                    val message = when (throwable.code()) {
+                        401 -> "Unauthorized. Please login again."
+                        403 -> "You don\'t have permission to access this."
+                        404 -> "Content not found."
+                        429 -> "Too many requests. Please try again later."
+                        in 500..599 -> "A server error occurred."
+                        else -> "An unknown error occurred."
+                    }
+                    Resource.Error(UiText.DynamicString(message))
                 }
                 else -> {
-                    NetworkResult.Exception(throwable)
+                    Resource.Error(UiText.DynamicString("An unknown error occurred."))
                 }
             }
         }

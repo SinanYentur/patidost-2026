@@ -1,5 +1,6 @@
 package com.patidost.app.domain.repository
 
+import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.Conversation
 import com.patidost.app.domain.model.Message
 import kotlinx.coroutines.flow.Flow
@@ -12,9 +13,9 @@ interface ConversationRepository {
 
     /**
      * Observes the list of conversations for the current user.
-     * @return A Flow emitting the list of conversations.
+     * @return A Flow emitting the resource-wrapped list of conversations.
      */
-    fun getConversations(): Flow<List<Conversation>>
+    fun getConversations(): Flow<Resource<List<Conversation>>>
 
     /**
      * Observes the messages within a specific conversation.

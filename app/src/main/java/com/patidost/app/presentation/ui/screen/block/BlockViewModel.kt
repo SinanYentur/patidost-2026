@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.User
 import com.patidost.app.domain.repository.BlockRepository
+import com.patidost.app.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 data class BlockedUsersUiState(
     val blockedUsers: List<User> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: UiText? = null
 )
 
 @HiltViewModel
@@ -43,7 +44,7 @@ class BlockViewModel @Inject constructor(
                     )
                     is Resource.Error -> it.copy(
                         isLoading = false,
-                        error = result.message?.toString() ?: "An unknown error occurred"
+                        error = result.message
                     )
                 }
             }

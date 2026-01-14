@@ -14,12 +14,18 @@ class FakeBlockRepository @Inject constructor() : BlockRepository {
     override fun getBlockedUsers(): Flow<Resource<List<User>>> = flow {
         emit(Resource.Loading())
         kotlinx.coroutines.delay(300)
+        // In a real app, this list would be populated from a remote or local data source
+        // For now, it just returns the in-memory list.
         emit(Resource.Success(blockedUsers.toList()))
     }
 
     override suspend fun blockUser(userId: String): Resource<Unit> {
-        // In a real app, we would get user details first
-        blockedUsers.add(User(uid = userId, name = "Blocked User $userId", email = "", avatarUrl = "", patiPoints = 0, status = "active", verificationLevel = 1))
+        // In a real app, you might want to confirm the user exists before blocking.
+        // Here, we just add a placeholder user to the list.
+        if (blockedUsers.none { it.uid == userId }) {
+            val userToBlock = User(uid = userId, name = "Blocked User $userId", email = "", avatarUrl = "", patiPoints = 0, status = "active", verificationLevel = 1)
+            blockedUsers.add(userToBlock)
+        }
         println("FakeBlockRepository: User $userId blocked.")
         return Resource.Success(Unit)
     }

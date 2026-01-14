@@ -1,30 +1,22 @@
 package com.patidost.app.data.remote
 
-import android.content.Context
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * A Singleton class to manage the authentication token.
+ * In a real app, this would use EncryptedSharedPreferences.
+ */
 @Singleton
-class TokenManager @Inject constructor(@ApplicationContext context: Context) {
-
-    private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-
-    private val sharedPreferences = EncryptedSharedPreferences.create(
-        "secret_shared_prefs",
-        masterKeyAlias,
-        context,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
-
-    fun saveToken(token: String) {
-        sharedPreferences.edit().putString("jwt_token", token).apply()
-    }
+class TokenManager @Inject constructor() {
+    private var token: String? = null
 
     fun getToken(): String? {
-        return sharedPreferences.getString("jwt_token", null)
+        // For now, return a dummy token. Later, this will read from a secure storage.
+        return token ?: "DUMMY_BEARER_TOKEN"
+    }
+
+    fun saveToken(token: String) {
+        this.token = token
     }
 }

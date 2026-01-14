@@ -1,6 +1,7 @@
 package com.patidost.app.presentation.ui.screen.explore.composables.swipe
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,13 +48,13 @@ fun PetSwipeCard(
     onGivePati: () -> Unit,
     onDislike: () -> Unit,
     onLike: () -> Unit,
+    onOwnerClick: () -> Unit
 ) {
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Box {
-            // Main Pet Image
             AsyncImage(
                 model = pet.imageUrl,
                 contentDescription = "${pet.name}'s photo",
@@ -63,7 +64,6 @@ fun PetSwipeCard(
                 contentScale = ContentScale.Crop
             )
 
-            // Content overlay
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -77,7 +77,10 @@ fun PetSwipeCard(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.clickable(onClick = onOwnerClick),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(Icons.Default.Place, contentDescription = "Distance", tint = Color.White, modifier = Modifier.size(16.dp))
                     Text(
                         text = "~${distance}km",
@@ -86,7 +89,6 @@ fun PetSwipeCard(
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                // Owner and actions
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -96,7 +98,6 @@ fun PetSwipeCard(
                         Icon(Icons.Default.Close, contentDescription = "Dislike", tint = Color.Red, modifier = Modifier.size(48.dp))
                     }
                     
-                    // TODO: Replace with custom Paw button
                     IconButton(onClick = onGivePati) {
                        Icon(painter = painterResource(id = R.drawable.ic_launcher_foreground), contentDescription = "Pati Ver", modifier = Modifier.size(64.dp) ) 
                     }
@@ -123,16 +124,13 @@ private fun PetSwipeCardPreview() {
                 imageUrl = "",
                 age = 2,
                 patiPoints = 120,
-                owner = PetOwner(
-                    ownerId = "user1",
-                    ownerName = "SibelR.",
-                    ownerAvatarUrl = ""
-                )
+                owner = PetOwner(ownerId = "user1", ownerName = "SibelR.", ownerAvatarUrl = "")
             ),
             distance = "5",
             onGivePati = {},
             onDislike = {},
-            onLike = {}
+            onLike = {},
+            onOwnerClick = {}
         )
     }
 }

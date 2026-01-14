@@ -3,38 +3,43 @@ package com.patidost.app.data.remote
 import com.patidost.app.data.remote.dto.PetDto
 import com.patidost.app.presentation.ui.screen.home.TopGiver
 import kotlinx.coroutines.delay
+import java.util.Date
 import javax.inject.Inject
 
-/**
- * A fake implementation of the ApiService for development and testing purposes.
- * It simulates network latency with a delay.
- */
 class FakeApiService @Inject constructor() : ApiService {
 
     override suspend fun getFeaturedPets(): List<PetDto> {
-        delay(1500) // Simulate network latency
+        delay(1500)
         return listOf(
             PetDto(
-                pet_id = "1",
-                pet_name = "Mırmır",
-                pet_breed = "Tekir",
-                primary_image_url = "https://patidost.dev/mirmir.jpg",
-                pet_age = 3,
-                owner_name = "Ayşe"
-            ),
-            PetDto(
-                pet_id = "2",
-                pet_name = "Paşa",
-                pet_breed = "Sivas Kangalı",
-                primary_image_url = "https://patidost.dev/pasa.jpg",
-                pet_age = 5,
-                owner_name = "Ahmet"
-            )
+                name = "Mırmır",
+                breed = "Tekir",
+                photoUrl = "https://patidost.dev/mirmir.jpg",
+                ownerId = "user_ayse_123",
+                birthDate = Date() // Use birthDate instead of age
+            ).apply {
+                id = "1" // Manually assign the ID as per new DTO design
+            }
         )
     }
 
     override suspend fun getTopGivers(): List<TopGiver> {
         delay(1000)
         return emptyList()
+    }
+
+    override suspend fun likePost(postId: String) {
+        delay(500)
+        println("Fake API: Liked post $postId")
+    }
+
+    override suspend fun unlikePost(postId: String) {
+        delay(500)
+        println("Fake API: Unliked post $postId")
+    }
+
+    override suspend fun givePatiPoints(donationRequest: DonationRequest) {
+        delay(1000)
+        println("Fake API: Received donation: $donationRequest")
     }
 }

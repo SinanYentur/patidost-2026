@@ -10,4 +10,5 @@ import com.patidost.app.data.remote.dto.UserDto
 interface UserDataSource {
     suspend fun createUser(userDto: UserDto): Resource<Unit>
     suspend fun getUser(userId: String): Resource<UserDto?>
+    suspend fun updateUser(userDto: UserDto): Resource<Unit>
 }

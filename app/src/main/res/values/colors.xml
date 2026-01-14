@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- PATİDOST GLOBAL PALETTE - V45.99 -->
-    <color name="SpaceDeep">#0B0E14</color>
-    <color name="PatiGold">#FFD700</color>
-    <color name="GlassWhite">#1AFFFFFF</color>
+    <!-- PATİDOST GLOBAL PALETTE - V45.99 (Namespaced for collision safety) -->
+    <color name="color_patidost_spacedeep">#0B0E14</color>
+    <color name="color_patidost_patigold">#FFD700</color>
+    <color name="color_patidost_glasswhite">#1AFFFFFF</color>
 </resources>

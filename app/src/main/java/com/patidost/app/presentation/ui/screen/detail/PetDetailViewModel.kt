@@ -3,7 +3,9 @@ package com.patidost.app.presentation.ui.screen.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.patidost.app.domain.repository.HomeRepository
+import com.patidost.app.core.util.Resource
+import com.patidost.app.domain.usecase.GetPetDetailUseCase
+import com.patidost.app.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,57 +15,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PetDetailViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val homeRepository: HomeRepository // Assuming we get details from here for now
+    private val getPetDetailUseCase: GetPetDetailUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val petId = savedStateHandle.get<String>("petId")!!
 
     private val _uiState = MutableStateFlow(PetDetailUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val petId: String = savedStateHandle.get<String>("petId") ?: ""
-
     init {
-        loadPetDetails()
+        getPetDetail()
     }
 
-    private fun loadPetDetails() {
-        if (petId.isBlank()) {
-            _uiState.update { it.copy(isLoading = false, error = "Pet ID is missing.") }
-            return
-        }
-
+    private fun getPetDetail() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-
-            // This is a simulation. In a real scenario, you'd have a getPetById method.
-            val featuredPetResult = homeRepository.getFeaturedPet()
-
-            featuredPetResult.fold(
-                onSuccess = { pet ->
-                    if (pet != null && pet.patiId == petId) {
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                imageUrl = pet.imageUrl,
-                                description = "Bu güzel dostumuz yeni yuvasını arıyor. Ona sıcak bir yuva sunmak ister misiniz?", // Fake description
-                                age = pet.age,
-                                breed = pet.breed,
-                                healthStatus = "Sağlıklı ve aşıları tam.", // Fake status
-                                isFavorite = false // Default state
-                            )
-                        }
-                    } else {
-                        _uiState.update { it.copy(isLoading = false, error = "Pet not found.") }
+            when (val result = getPetDetailUseCase(petId)) {
+                is Resource.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            pet = result.data
+                        )
                     }
-                },
-                onFailure = { exception ->
-                    _uiState.update { it.copy(isLoading = false, error = exception.message) }
                 }
-            )
+                is Resource.Error -> {
+                    _uiState.update { it.copy(isLoading = false, error = result.message) }
+                }
+                is Resource.Loading -> { /* No-op */ }
+            }
         }
-    }
-
-    fun toggleFavorite() {
-        _uiState.update { it.copy(isFavorite = !it.isFavorite) }
     }
 }

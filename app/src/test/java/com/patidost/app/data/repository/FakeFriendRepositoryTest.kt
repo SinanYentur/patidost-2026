@@ -2,6 +2,7 @@ package com.patidost.app.data.repository
 
 import com.google.common.truth.Truth.assertThat
 import com.patidost.app.core.util.Resource
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -19,24 +20,23 @@ class FakeFriendRepositoryTest {
     @Test
     fun `getFriends returns success with mock data`() = runTest {
         // Act
-        val result = repository.getFriends().first { it !is Resource.Loading } // Skip loading state
+        // Drop the initial Loading state and get the first real emission (Success)
+        val result = repository.getFriends().drop(1).first()
 
         // Assert
         assertThat(result).isInstanceOf(Resource.Success::class.java)
-        assertThat(result.data).hasSize(2)
-        assertThat(result.data?.first()?.name).isEqualTo("Arda")
+        val successResult = result as Resource.Success
+        assertThat(successResult.data).isNotNull()
+        assertThat(successResult.data).hasSize(2)
+        assertThat(successResult.data?.first()?.name).isEqualTo("Arda")
     }
 
     @Test
-    fun `blockUser and check if it affects future calls`() = runTest {
-        // This is a placeholder for a more complex test.
-        // In a real scenario, blockUser might not directly affect getFriends,
-        // but this shows the test setup is working.
-
+    fun `sendFriendRequest should return success`() = runTest {
         // Act
-        val blockResult = repository.blockUser("some_user_id")
+        val result = repository.sendFriendRequest("some_user_id")
 
         // Assert
-        assertThat(blockResult).isInstanceOf(Resource.Success::class.java)
+        assertThat(result).isInstanceOf(Resource.Success::class.java)
     }
 }

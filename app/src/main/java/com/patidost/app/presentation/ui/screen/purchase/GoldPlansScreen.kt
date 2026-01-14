@@ -1,5 +1,6 @@
 package com.patidost.app.presentation.ui.screen.purchase
 
+import android.app.Activity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,12 +23,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.patidost.app.presentation.ui.util.UiText
 
 @Composable
 fun GoldPlansScreen(viewModel: GoldViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -52,7 +56,11 @@ fun GoldPlansScreen(viewModel: GoldViewModel = hiltViewModel()) {
             CircularProgressIndicator()
         } else {
             Button(
-                onClick = { viewModel.onEvent(GoldPurchaseEvent.Purchase) },
+                onClick = { 
+                    (context as? Activity)?.let {
+                        viewModel.onEvent(GoldPurchaseEvent.Purchase(it))
+                    }
+                },
                 enabled = uiState.selectedPlan != null
             ) {
                 Text("Satın Al")

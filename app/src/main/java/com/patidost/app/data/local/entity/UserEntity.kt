@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 
 /**
  * Represents a user in the local database.
+ * This must be kept in sync with the User domain model.
  */
 @Entity(tableName = "users")
 data class UserEntity(
@@ -13,5 +14,7 @@ data class UserEntity(
     val name: String,
     val email: String,
     val avatarUrl: String,
-    val patiPoints: Int
+    val patiPoints: Int = 0,
+    val status: String, // Added to match domain model
+    val verificationLevel: Int // Added to match domain model
 )

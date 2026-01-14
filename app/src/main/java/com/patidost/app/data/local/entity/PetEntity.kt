@@ -17,5 +17,6 @@ data class PetEntity(
     val breed: String,
     val imageUrl: String,
     val age: Int,
-    @Embedded val owner: PetOwner
+    val patiPoints: Int = 0, // Total points received
+    @Embedded(prefix = "owner_") val owner: PetOwner
 )

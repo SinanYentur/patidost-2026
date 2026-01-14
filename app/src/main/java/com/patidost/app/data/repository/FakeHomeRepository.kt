@@ -1,40 +1,35 @@
 package com.patidost.app.data.repository
 
+import com.patidost.app.core.util.Resource
+import com.patidost.app.domain.model.Pet
+import com.patidost.app.domain.model.PetOwner
+import com.patidost.app.domain.model.TopGiver
 import com.patidost.app.domain.repository.HomeRepository
-import com.patidost.app.presentation.ui.screen.home.FeaturedPet
-import com.patidost.app.presentation.ui.screen.home.PetOwner
-import com.patidost.app.presentation.ui.screen.home.TopGiver
-import kotlinx.coroutines.delay
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class FakeHomeRepository @Inject constructor() : HomeRepository {
+class FakeHomeRepository : HomeRepository {
 
-    override suspend fun getTopGivers(): Result<List<TopGiver>> {
-        delay(1000) // Simulate network delay
-        val fakeData = listOf(
-            TopGiver("Melis", "", 14),
-            TopGiver("Arda", "", 10),
-            TopGiver("Emir", "", 7),
-            TopGiver("Tuğba", "", 6),
-            TopGiver("Elif", "", 5)
+    private val fakePets = listOf(
+        Pet(
+            id = "1", name = "Mırmır", breed = "Tekir", imageUrl = "", age = 3, patiPoints = 100,
+            owner = PetOwner(ownerId = "user1", ownerName = "Ayşe", ownerAvatarUrl = "")
+        ),
+        Pet(
+            id = "2", name = "Paşa", breed = "Sivas Kangalı", imageUrl = "", age = 5, patiPoints = 250,
+            owner = PetOwner(ownerId = "user2", ownerName = "Ahmet", ownerAvatarUrl = "")
         )
-        return Result.success(fakeData)
+    )
+
+    override fun getFeaturedPets(): Flow<Resource<List<Pet>>> = flow {
+        emit(Resource.Success(fakePets))
     }
 
-    override suspend fun getFeaturedPet(): Result<FeaturedPet?> {
-        delay(1200) // Simulate network delay
-        val fakeOwner = PetOwner("SibelR.", "")
-        val fakePet = FeaturedPet(
-            name = "Süslü",
-            breed = "Golden Retriever",
-            imageUrl = "",
-            patiId = "40351824",
-            patiScore = 328,
-            owner = fakeOwner,
-            age = 2,
-            gender = "Erkek",
-            birthDate = "11 Nisan 2022"
+    override fun getTopGivers(): Flow<Resource<List<TopGiver>>> = flow {
+        val fakeGivers = listOf(
+            TopGiver("user2", "Ahmet", "", 50),
+            TopGiver("user1", "Ayşe", "", 30)
         )
-        return Result.success(fakePet)
+        emit(Resource.Success(fakeGivers))
     }
 }

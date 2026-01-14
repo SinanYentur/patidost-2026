@@ -1,44 +1,56 @@
 package com.patidost.app.data.repository
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.patidost.app.core.util.Resource
-import com.patidost.app.data.local.dao.PetDao
-import com.patidost.app.data.remote.ApiService
+import com.patidost.app.data.mapper.toDomain
+import com.patidost.app.data.remote.HomeDataSource
+import com.patidost.app.data.remote.dto.PetDto
 import com.patidost.app.domain.model.Pet
+import com.patidost.app.domain.model.PetOwner
+import com.patidost.app.domain.model.TopGiver
 import com.patidost.app.domain.repository.HomeRepository
-import com.patidost.app.domain.repository.PetFilter
-import com.patidost.app.presentation.ui.screen.home.TopGiver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(
-    private val petDao: PetDao,
-    // private val apiService: ApiService // ApiService will be added in a future step
+    private val homeDataSource: HomeDataSource,
+    private val firestore: FirebaseFirestore // Added dependency
 ) : HomeRepository {
 
-    // This is a temporary implementation until ApiService is integrated
-    override suspend fun getTopGivers(): Resource<List<TopGiver>> {
-        return Resource.Success(emptyList())
+    override fun getFeaturedPets(): Flow<Resource<List<Pet>>> = flow {
+        homeDataSource.getFeaturedPets().collect { resource ->
+            when (resource) {
+                is Resource.Loading -> emit(Resource.Loading())
+                is Resource.Success -> {
+                    val petDtos = resource.data ?: emptyList()
+                    // Fetch all owners in a single batch for efficiency if possible, 
+                    // but for simplicity here we fetch one by one.
+                    val pets = petDtos.mapNotNull { petDto ->
+                        getOwner(petDto.ownerId)?.let { owner ->
+                            petDto.toDomain(owner)
+                        }
+                    }
+                    emit(Resource.Success(pets))
+                }
+                is Resource.Error -> emit(Resource.Error(resource.message))
+            }
+        }
     }
 
-    override suspend fun getFeaturedPet(): Resource<Pet?> {
-        // This will be replaced with the offline-first implementation
-        return Resource.Success(null)
+    override fun getTopGivers(): Flow<Resource<List<TopGiver>>> {
+        return homeDataSource.getTopGivers()
     }
 
-    override suspend fun getPetById(id: String): Resource<Pet> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun searchPets(query: String, filter: PetFilter): Resource<List<Pet>> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun givePatiPoint(petId: String, amount: Int): Resource<Int> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getUserPoints(): Resource<Int> {
-        TODO("Not yet implemented")
+    private suspend fun getOwner(userId: String): PetOwner? {
+        return try {
+            val userDoc = firestore.collection("users").document(userId).get().await()
+            val userName = userDoc.getString("name") ?: ""
+            val userAvatar = userDoc.getString("photoUrl")
+            PetOwner(ownerId = userId, ownerName = userName, ownerAvatarUrl = userAvatar)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

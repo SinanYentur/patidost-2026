@@ -1,18 +1,32 @@
 package com.patidost.app.di
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.ktx.functions
+import com.google.firebase.ktx.Firebase
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-/**
- * 🛡️ GÖREV 0: SIFIR NOKTASI
- * Anayasal kimlik olan 'com.patidost.app' paketi altında, Hilt için temel bağımlılık modülü.
- * Bu dosyanın yaratılması, projenin yeniden doğuşunun ilk adımıdır.
- */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Bağımlılıklar buraya eklenecek.
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = Firebase.auth
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = Firebase.firestore
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFunctions(): FirebaseFunctions = Firebase.functions
 
 }

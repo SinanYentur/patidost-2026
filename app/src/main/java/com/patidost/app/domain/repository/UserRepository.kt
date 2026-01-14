@@ -1,15 +1,32 @@
 package com.patidost.app.domain.repository
 
 import com.patidost.app.core.util.Resource
+import com.patidost.app.domain.model.Pet
+import com.patidost.app.domain.model.User
+import kotlinx.coroutines.flow.Flow
 
 /**
- * Repository for user-specific data operations.
+ * The constitutional contract for all user-related data operations.
  */
 interface UserRepository {
 
     /**
-     * Atomically gives pati points from the current user to a pet.
-     * This should be a transactional operation.
+     * Fetches a user's data. May use a cache or force a network refresh.
      */
-    suspend fun givePatiPoints(fromUserId: String, toPetId: String, amount: Int): Resource<Unit>
+    suspend fun getUser(userId: String, forceRefresh: Boolean): Resource<User>
+
+    /**
+     * Observes the pets belonging to a specific user for real-time updates.
+     */
+    fun getPetsForUser(userId: String): Flow<Resource<List<Pet>>>
+
+    /**
+     * Adds a new pet for the current user.
+     */
+    suspend fun addPet(pet: Pet): Resource<Unit>
+
+    /**
+     * Updates the current user's profile data.
+     */
+    suspend fun updateUser(user: User): Resource<Unit>
 }

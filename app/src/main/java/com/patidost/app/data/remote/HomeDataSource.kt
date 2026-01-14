@@ -1,10 +1,11 @@
 package com.patidost.app.data.remote
 
 import com.patidost.app.core.util.Resource
-import com.patidost.app.domain.model.Post
+import com.patidost.app.data.remote.dto.PetDto
+import com.patidost.app.domain.model.TopGiver
+import kotlinx.coroutines.flow.Flow
 
 interface HomeDataSource {
-    suspend fun getPostById(postId: String): Resource<Post?>
-    suspend fun toggleLike(postId: String, userId: String): Resource<Unit>
-    suspend fun addComment(postId: String, userId: String, text: String): Resource<Unit>
+    fun getFeaturedPets(): Flow<Resource<List<PetDto>>>
+    fun getTopGivers(): Flow<Resource<List<TopGiver>>>
 }

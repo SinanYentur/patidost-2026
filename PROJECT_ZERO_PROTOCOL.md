@@ -1,3 +1,9 @@
+# BAŞ ANAYASA EMRİ (TARTIŞMAK YOK. KONU KİLİT.)
+
+**Tüm teknik inceleme analizleri, DNA zinciri vb. anayasadaki tüm yetkilerim ile incelemeden kod yazamaz, ekleyemez, çıkartamazsın. Tüm kaynak, hataya sebebiyet verecek olan bileşenler, fazlar, dosya klasörleri analiz ettikten sonra karar verecek ve kod yazacaksın.**
+
+---
+
 # PROJECT ZERO PROTOCOL
 
 ## I. Üst Anayasa (Overarching Constitution)

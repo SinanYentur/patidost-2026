@@ -1,5 +1,6 @@
 package com.patidost.app.data.repository
 
+import com.patidost.app.core.util.Resource
 import com.patidost.app.domain.model.Conversation
 import com.patidost.app.domain.model.Message
 import com.patidost.app.domain.repository.ConversationRepository
@@ -8,13 +9,9 @@ import kotlinx.coroutines.flow.flow
 import java.util.Date
 import javax.inject.Inject
 
-/**
- * A fake implementation of the ConversationRepository for development and testing.
- * This class returns hardcoded data and simulates the behavior of a real data source.
- */
 class FakeConversationRepository @Inject constructor() : ConversationRepository {
 
-    override fun getConversations(): Flow<List<Conversation>> = flow {
+    override fun getConversations(): Flow<Resource<List<Conversation>>> = flow {
         val conversations = listOf(
             Conversation(
                 id = "1",
@@ -35,7 +32,7 @@ class FakeConversationRepository @Inject constructor() : ConversationRepository 
                 otherUserName = "Emre"
             )
         )
-        emit(conversations)
+        emit(Resource.Success(conversations))
     }
 
     override fun getMessages(conversationId: String): Flow<List<Message>> = flow {

@@ -4,6 +4,7 @@ import com.patidost.app.core.util.Resource
 import com.patidost.app.data.local.dao.CommentDao
 import com.patidost.app.data.mapper.toDomain
 import com.patidost.app.data.remote.ApiService
+import com.patidost.app.data.remote.dto.CommentDto
 import com.patidost.app.data.util.networkBoundResource
 import com.patidost.app.domain.model.Comment
 import com.patidost.app.domain.repository.CommentRepository
@@ -23,10 +24,10 @@ class CommentRepositoryImpl @Inject constructor(
             }
         },
         fetch = {
-            // TODO: apiService.getCommentsForPost(postId)
-            emptyList() // Returning empty list as network fetch is not implemented yet
+            // Explicitly define the type for the compiler
+            emptyList<CommentDto>() // TODO: apiService.getCommentsForPost(postId)
         },
-        saveFetchResult = { remoteComments ->
+        saveFetchResult = { remoteComments: List<CommentDto> ->
             // TODO: Map DTOs to Entities and upsert to commentDao
         }
     )

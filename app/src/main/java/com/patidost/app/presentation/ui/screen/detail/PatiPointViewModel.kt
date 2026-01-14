@@ -3,42 +3,43 @@ package com.patidost.app.presentation.ui.screen.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patidost.app.core.util.Resource
-import com.patidost.app.domain.repository.HomeRepository
+import com.patidost.app.domain.usecase.GivePatiPointUseCase
+import com.patidost.app.presentation.ui.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PatiPointViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val givePatiPointUseCase: GivePatiPointUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<PatiPointUiState>(PatiPointUiState.Idle)
+    private val _uiState = MutableStateFlow(PatiPointUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _eventFlow = Channel<PatiPointEvent>()
-    val eventFlow = _eventFlow.receiveAsFlow()
-
-    fun givePatiPoints(petId: String, amount: Int) {
+    fun givePatiPoints(fromUserId: String, toPetId: String, amount: Int) {
         viewModelScope.launch {
-            _uiState.value = PatiPointUiState.Loading
-            val result = homeRepository.givePatiPoint(petId, amount)
-
-            _uiState.value = PatiPointUiState.Idle // Reset state after operation
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            
+            // TODO: Actually get the fromUserId from a user repository/session manager
+            val result = givePatiPointUseCase(fromUserId, toPetId, amount)
 
             when (result) {
                 is Resource.Success -> {
-                    val newBalance = result.data?.currentPoints ?: 0
-                    _eventFlow.send(PatiPointEvent.ShowDonationSuccess("Başarıyla $amount Pati Puanı gönderildi! Yeni bakiyen: $newBalance"))
+                    _uiState.update { it.copy(isLoading = false, success = true) }
                 }
                 is Resource.Error -> {
-                    _eventFlow.send(PatiPointEvent.ShowError(result.message!!))
+                    _uiState.update { 
+                        it.copy(
+                            isLoading = false, 
+                            error = result.message
+                        )
+                    }
                 }
-                is Resource.Loading -> { /* Not used in this flow */ }
+                is Resource.Loading -> { /* No-op */ }
             }
         }
     }

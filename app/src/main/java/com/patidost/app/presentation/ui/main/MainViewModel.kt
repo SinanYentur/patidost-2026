@@ -26,13 +26,18 @@ class MainViewModel @Inject constructor(
 
     private fun checkAuthStatus() {
         viewModelScope.launch {
-            val result = checkAuthStatusUseCase()
-            val startDestination = if (result is Resource.Success && result.data != null) {
-                Screen.Explore.route // User is logged in, go to Explore
-            } else {
-                Screen.Auth.route // User is not logged in, go to Auth
+            try {
+                val result = checkAuthStatusUseCase()
+                val startDestination = if (result is Resource.Success && result.data != null) {
+                    Screen.Explore.route // User is logged in, go to Explore
+                } else {
+                    Screen.Auth.route // User is not logged in, go to Auth
+                }
+                _uiState.update { it.copy(isLoading = false, startDestination = startDestination) }
+            } catch (e: Exception) {
+                // If any unhandled exception occurs (e.g., network error), default to Auth screen
+                _uiState.update { it.copy(isLoading = false, startDestination = Screen.Auth.route) }
             }
-            _uiState.update { it.copy(isLoading = false, startDestination = startDestination) }
         }
     }
 }

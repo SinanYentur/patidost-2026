@@ -1,19 +1,19 @@
+
 package com.patidost.app.data.mapper
 
-import com.patidost.app.data.local.entity.PostEntity
+import com.patidost.app.data.remote.dto.PostDto
 import com.patidost.app.domain.model.Post
+import com.patidost.app.domain.model.PostAuthor
 
-/**
- * Maps PostEntity (database model) to Post (domain model).
- */
-fun PostEntity.toDomain(): Post {
+fun PostDto.toPost(author: PostAuthor, isLiked: Boolean): Post {
     return Post(
-        postId = this.postId,
-        author = this.author,
+        postId = this.id,
+        author = author,
         text = this.text,
-        imageUrl = this.imageUrl,
-        timestamp = this.timestamp,
+        imageUrl = this.mediaUrl,
+        timestamp = this.createdAt?.time ?: 0L,
         likeCount = this.likeCount,
-        relatedPetId = this.relatedPetId
+        isLiked = isLiked,
+        relatedPetId = this.petId
     )
 }

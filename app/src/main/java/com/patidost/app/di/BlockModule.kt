@@ -15,7 +15,8 @@ object BlockModule {
     @Provides
     @Singleton
     fun provideBlockRepository(): BlockRepository {
-        // Development phase: Provide the fake repository.
+        // Development phase: Provide the fake repository for building and testing UI flows.
+        // This will be swapped with a real implementation once the security rules are in place.
         return FakeBlockRepository()
     }
 }

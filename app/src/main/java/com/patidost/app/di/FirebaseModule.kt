@@ -1,26 +1,5 @@
 package com.patidost.app.di
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+// ANAYASAL NOT: This module has been deprecated and its contents merged into AppModule
+// to resolve a Hilt duplicate binding conflict. This file will be removed.
 
-@Module
-@InstallIn(SingletonComponent::class)
-object FirebaseModule {
-
-    @Provides
-    @Singleton
-    fun provideFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
-    }
-
-    @Provides
-    @Singleton
-    fun provideFirebaseFirestore(): FirebaseFirestore {
-        return FirebaseFirestore.getInstance()
-    }
-}

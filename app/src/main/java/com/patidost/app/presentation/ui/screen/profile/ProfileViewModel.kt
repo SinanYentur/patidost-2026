@@ -1,67 +1,63 @@
 package com.patidost.app.presentation.ui.screen.profile
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.patidost.app.core.util.Resource
-import com.patidost.app.domain.repository.AuthRepository
-import com.patidost.app.presentation.ui.util.UiText
+import com.patidost.app.domain.usecase.GetProfileDataUseCase
+import com.patidost.app.domain.usecase.economy.GetSubscriptionUseCase
+import com.patidost.app.domain.usecase.economy.GetWalletUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val getProfileDataUseCase: GetProfileDataUseCase,
+    private val getWalletUseCase: GetWalletUseCase,
+    private val getSubscriptionUseCase: GetSubscriptionUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Loading)
+    private val userId: String = savedStateHandle.get<String>("userId") ?: "CURRENT_USER_ID_FALLBACK"
+
+    private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val _navigationEvent = Channel<NavigationEvent>()
-    val navigationEvent = _navigationEvent.receiveAsFlow()
-
     init {
-        loadUserProfile()
+        loadProfileData()
     }
 
-    private fun loadUserProfile() {
-        viewModelScope.launch {
-            _uiState.value = ProfileUiState.Loading
-            when (val result = authRepository.getCurrentUser()) {
-                is Resource.Success -> {
-                    val user = result.data!!
-                    _uiState.value = ProfileUiState.Success(
-                        userName = user.name,
-                        userEmail = user.email,
-                        userAvatarUrl = user.avatarUrl
-                    )
+    private fun loadProfileData() {
+        getProfileDataUseCase(userId).onEach { result ->
+            _uiState.update {
+                when (result) {
+                    is Resource.Success -> it.copy(user = result.data, isLoading = false, error = null)
+                    is Resource.Error -> it.copy(error = result.message, isLoading = false)
+                    is Resource.Loading -> it.copy(isLoading = true)
                 }
-                is Resource.Error -> {
-                    _uiState.value = ProfileUiState.Error(result.message ?: UiText.DynamicString("Failed to load profile."))
+            }
+        }.launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            getWalletUseCase().collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(wallet = result.data) }
                 }
             }
         }
-    }
 
-    fun onSignOutClicked() {
         viewModelScope.launch {
-            when (authRepository.signOut()) {
-                is Resource.Success -> {
-                    _navigationEvent.send(NavigationEvent.NavigateToLogin)
-                }
-                is Resource.Error -> {
-                    // Optionally, show a temporary error message to the user
-                    // For now, we just log it or ignore it.
+            getSubscriptionUseCase().collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(subscription = result.data) }
                 }
             }
         }
-    }
-
-    sealed interface NavigationEvent {
-        object NavigateToLogin : NavigationEvent
     }
 }

@@ -3,7 +3,9 @@ package com.patidost.app.di
 import android.content.Context
 import androidx.room.Room
 import com.patidost.app.data.local.PatiDostDatabase
+import com.patidost.app.data.local.dao.CommentDao
 import com.patidost.app.data.local.dao.PetDao
+import com.patidost.app.data.local.dao.PostDao
 import com.patidost.app.data.local.dao.UserDao
 import dagger.Module
 import dagger.Provides
@@ -12,16 +14,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-/**
- * Hilt module that provides database-related dependencies.
- */
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    /**
-     * Provides a singleton instance of the PatiDostDatabase.
-     */
     @Provides
     @Singleton
     fun providePatiDostDatabase(@ApplicationContext context: Context): PatiDostDatabase {
@@ -29,18 +25,20 @@ object DatabaseModule {
             context,
             PatiDostDatabase::class.java,
             "patidost.db"
-        ).build()
+        )
+        .addMigrations(PatiDostDatabase.MIGRATION_1_2)
+        .build()
     }
 
-    /**
-     * Provides the PetDao.
-     */
     @Provides
     fun providePetDao(database: PatiDostDatabase): PetDao = database.petDao()
 
-    /**
-     * Provides the UserDao.
-     */
     @Provides
     fun provideUserDao(database: PatiDostDatabase): UserDao = database.userDao()
+
+    @Provides
+    fun providePostDao(database: PatiDostDatabase): PostDao = database.postDao()
+
+    @Provides
+    fun provideCommentDao(database: PatiDostDatabase): CommentDao = database.commentDao()
 }

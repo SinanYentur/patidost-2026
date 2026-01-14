@@ -1,6 +1,7 @@
 package com.patidost.app.data.util
 
 import com.patidost.app.core.util.Resource
+import com.patidost.app.presentation.ui.util.UiText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -8,34 +9,28 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 /**
- * A utility function that provides a resource from local database and updates it from network.
- * This is the implementation of the "Single Source of Truth" pattern.
+ * A utility function that provides a resource from the local database,
+ * but fetches from the network and saves to the database if the data is stale or not present.
  */
 inline fun <ResultType, RequestType> networkBoundResource(
-    crossinline query: () -> Flow<ResultType>, // Fetches data from the local database
-    crossinline fetch: suspend () -> RequestType, // Fetches data from the network
-    crossinline saveFetchResult: suspend (RequestType) -> Unit, // Saves network data to the database
-    crossinline shouldFetch: (ResultType) -> Boolean = { true } // Decides if a network fetch should be made
+    crossinline query: () -> Flow<ResultType>,
+    crossinline fetch: suspend () -> RequestType,
+    crossinline saveFetchResult: suspend (RequestType) -> Unit,
+    crossinline shouldFetch: (ResultType) -> Boolean = { true }
 ) = flow {
-    // 1. Emit initial data from the database
     val data = query().first()
-    emit(Resource.Loading(data))
 
-    // 2. Decide whether to fetch from network
-    val flow = if (shouldFetch(data)) {
-        // 3. Fetch succeeded, save to DB and emit from DB
+    if (shouldFetch(data)) {
+        emit(Resource.Loading(data))
+
         try {
             saveFetchResult(fetch())
-            query().map { Resource.Success(it) }
+            emitAll(query().map { Resource.Success(it) })
         } catch (throwable: Throwable) {
-            // 4. Fetch failed, emit error and keep old data
-            query().map { Resource.Error(throwable.message, it) }
+            val errorMessage = UiText.DynamicString("Failed to fetch data: ${throwable.message}")
+            emitAll(query().map { Resource.Error(errorMessage, it) })
         }
     } else {
-        // 5. Not fetching from network, just emit data from DB
-        query().map { Resource.Success(it) }
+        emitAll(query().map { Resource.Success(it) })
     }
-
-    // Emit the combined flow
-    emitAll(flow)
 }

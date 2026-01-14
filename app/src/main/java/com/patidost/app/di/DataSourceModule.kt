@@ -2,23 +2,29 @@ package com.patidost.app.di
 
 import com.patidost.app.data.remote.AuthDataSource
 import com.patidost.app.data.remote.AuthDataSourceImpl
+import com.patidost.app.data.remote.HomeDataSource
+import com.patidost.app.data.remote.HomeDataSourceImpl
 import com.patidost.app.data.remote.UserDataSource
 import com.patidost.app.data.remote.UserDataSourceImpl
-import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class DataSourceModule {
+object DataSourceModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindAuthDataSource(authDataSourceImpl: AuthDataSourceImpl): AuthDataSource
+    fun provideAuthDataSource(authDataSourceImpl: AuthDataSourceImpl): AuthDataSource = authDataSourceImpl
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindUserDataSource(userDataSourceImpl: UserDataSourceImpl): UserDataSource
+    fun provideUserDataSource(userDataSourceImpl: UserDataSourceImpl): UserDataSource = userDataSourceImpl
+
+    @Provides
+    @Singleton
+    fun provideHomeDataSource(homeDataSourceImpl: HomeDataSourceImpl): HomeDataSource = homeDataSourceImpl
 }
