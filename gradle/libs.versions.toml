@@ -1,8 +1,8 @@
-toml
 [versions]
 agp = "8.3.2"
 kotlin = "1.9.22"
-ksp = "1.9.22-1.0.17"serialization = "1.6.3"
+ksp = "1.9.22-1.0.17"
+serialization = "1.6.3"
 gson = "2.10.1"
 timber = "5.0.1"
 coreKtx = "1.12.0"
