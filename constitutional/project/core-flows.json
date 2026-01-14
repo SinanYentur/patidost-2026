@@ -1,0 +1,54 @@
+{
+  "primary_flows": [
+    {
+      "id": "FLOW_ONBOARDING_001",
+      "name": "Kullanıcı Kaydı ve İlk Pet'in Eklenmesi",
+      "steps": [
+        "open_app",
+        "navigate_to_auth",
+        "fill_registration_form",
+        "receive_verification",
+        "navigate_to_home",
+        "prompt_to_add_pet",
+        "fill_add_pet_form",
+        "see_pet_in_profile"
+      ],
+      "success_metrics": [
+        "onboarding_completion_rate",
+        "time_to_first_pet_added"
+      ],
+      "failure_modes": [
+        "registration_fail",
+        "verification_fail",
+        "add_pet_abandonment"
+      ]
+    },
+    {
+      "id": "FLOW_CORE_VALUE_001",
+      "name": "Ana Akışı Görüntüleme ve Etkileşim",
+      "steps": [
+        "open_app_authenticated",
+        "navigate_to_home",
+        "view_feed_of_posts",
+        "scroll_feed",
+        "like_a_post",
+        "navigate_to_pet_detail_from_post"
+      ],
+      "success_metrics": [
+        "daily_active_users",
+        "feed_scroll_depth",
+        "likes_per_session"
+      ],
+      "failure_modes": [
+        "feed_load_failure",
+        "performance_issue_on_scroll",
+        "interaction_failure"
+      ]
+    }
+  ],
+  "flow_governance": {
+    "CHANGE_PROCESS": "Core flow değişikliği, Product Reality Governor ve Technical Reality Governor onayı gerektirir.",
+    "METRICS_TRACKING": "Tüm birincil akışlar için başarı ve başarısızlık metriklerinin toplanması ve periyodik olarak incelenmesi zorunludur.",
+    "BREAKING_CHANGE": "Core flow üzerinde yapılan ve kullanıcı alışkanlığını bozan bir değişiklik, en az bir sürüm önceden duyurulmalı ve A/B testi ile doğrulanmalıdır."
+  }
+}

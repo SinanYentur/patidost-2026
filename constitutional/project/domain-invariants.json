@@ -1,0 +1,50 @@
+
+{
+  "invariants": [
+    {
+      "id": "INV_AUTH_001",
+      "statement": "Kullanıcı hesabı, sisteme erişim için email veya telefon ile doğrulanmalıdır.",
+      "type": "SECURITY",
+      "enforcement_level": "HARD_FAIL",
+      "affected_components": ["auth_service", "user_service"],
+      "test_coverage_required": 100
+    },
+    {
+      "id": "INV_ECON_001",
+      "statement": "Pati Puanı, yalnızca bir KULLANICIDAN bir EVCİL HAYVANA verilebilir.",
+      "type": "BUSINESS_LOGIC",
+      "enforcement_level": "HARD_FAIL",
+      "affected_components": ["economy_service", "wallet_service", "GivePatiPointUseCase"],
+      "test_coverage_required": 100
+    },
+    {
+      "id": "INV_PET_001",
+      "statement": "Bir kullanıcı en fazla 5 aktif evcil hayvana sahip olabilir.",
+      "type": "BUSINESS_LOGIC",
+      "enforcement_level": "REJECT_ACTION",
+      "affected_components": ["pet_service", "AddPetUseCase"],
+      "test_coverage_required": 95
+    },
+    {
+      "id": "INV_PRIVACY_001",
+      "statement": "Kullanıcının kesin konumu (raw location) ASLA saklanamaz ve gösterilemez, yalnızca yaklaşık konum (approximate) kullanılabilir.",
+      "type": "PRIVACY & ETHICS",
+      "enforcement_level": "HARD_FAIL",
+      "affected_components": ["discovery_service", "location_manager"],
+      "test_coverage_required": 100
+    },
+    {
+      "id": "INV_DATA_001",
+      "statement": "Hesap silindiğinde, kullanıcıya ait tüm kişisel kimlik bilgileri, evcil hayvanları ve medyaları kalıcı olarak yok edilir.",
+      "type": "DATA_LIFECYCLE",
+      "enforcement_level": "HARD_FAIL",
+      "affected_components": ["user_service", "data_deletion_service"],
+      "test_coverage_required": 100
+    }
+  ],
+  "validation_rules": {
+    "NEW_FEATURE_CHECK": "Yeni özellik, listelenen değişmezlerden herhangi birini ihlal ediyor mu?",
+    "REFACTOR_CHECK": "Yeniden yapılandırma, tüm değişmezlerin korunmasını sağlıyor mu?",
+    "MIGRATION_CHECK": "Veri veya şema migrasyonu, değişmez bütünlüğünü tehlikeye atıyor mu?"
+  }
+}

@@ -1,0 +1,29 @@
+
+{
+  "project_type": "MOBILE",
+  "development_stage": "MVP",
+  "core_axioms": {
+    "WHAT_WE_ARE": "Patidost, evcil hayvan sahiplerini ve hayvanseverleri bir araya getiren, sosyal etkileşim ve hafif rekabet üzerine kurulu, mobil öncelikli bir topluluk platformudur.",
+    "WHAT_WE_ARE_NOT": "Bir e-ticaret sitesi, ciddi bir sahiplendirme platformu veya profesyonel veterinerlik hizmeti değiliz.",
+    "WHY_WE_EXIST": "İnsanların evcil hayvanları üzerinden pozitif sosyal bağlar kurmasını sağlamak ve evcil hayvan bakımını teşvik eden eğlenceli bir deneyim sunmak.",
+    "WHO_WE_SERVE": "Evcil hayvan sahibi olan veya hayvanları seven, sosyal ve mobil teknolojiye yatkın şehirli kullanıcılar."
+  },
+  "boundary_conditions": {
+    "TECHNICAL_BOUNDARIES": [
+      "offline_support_level_1",
+      "app_store_compliance_full",
+      "battery_efficiency_high",
+      "max_response_time_ms_500"
+    ],
+    "BUSINESS_BOUNDARIES": [
+      "revenue_model_freemium_with_gold_subscription",
+      "pricing_tiers_defined_in_phase_4",
+      "geographic_limits_global"
+    ],
+    "ETHICAL_BOUNDARIES": [
+      "privacy_level_user_centric_approximate_location",
+      "data_usage_policy_transparent_and_minimal",
+      "accessibility_commitment_wcag_2_1_aa_target"
+    ]
+  }
+}
