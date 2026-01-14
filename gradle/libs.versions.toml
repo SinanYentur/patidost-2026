@@ -33,7 +33,7 @@ benchmarkMacro = "1.2.4"
 mockk = "1.13.10"
 turbine = "1.1.0"
 billing = "6.2.1"
-desugar = "2.0.4" # ANAYASAL EKLEME
+desugar = "2.0.4"  # ANAYASAL EKLEME
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
