@@ -2,8 +2,7 @@ toml
 [versions]
 agp = "8.3.2"
 kotlin = "1.9.22"
-ksp = "1.9.22-1.0.17"
-serialization = "1.6.3"
+ksp = "1.9.22-1.0.17"serialization = "1.6.3"
 gson = "2.10.1"
 timber = "5.0.1"
 coreKtx = "1.12.0"
@@ -33,7 +32,7 @@ benchmarkMacro = "1.2.4"
 mockk = "1.13.10"
 turbine = "1.1.0"
 billing = "6.2.1"
-desugar = "2.0.4"  # ANAYASAL EKLEME
+desugar = "2.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -86,7 +85,7 @@ androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchm
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
-android-desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" } # ANAYASAL EKLEME
+android-desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
